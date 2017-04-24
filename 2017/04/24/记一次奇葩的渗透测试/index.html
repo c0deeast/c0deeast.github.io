@@ -15,22 +15,42 @@
 
 
 
-<meta name="description" content="Norman.Chew
-nightraid
-secvul团队">
-<meta property="og:type" content="website">
-<meta property="og:title" content="friends">
-<meta property="og:url" content="http://e4st.world/friends/index.html">
+<meta name="description" content="前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。
+
+0x00 信息搜集前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：可以发现，其中有admin后台，访问如图：对于后台我一般会做如下尝试：
+
+弱口令走一波
+在用户名处填写注入语句，一般使用’来测试
+若无验证码，可以尝试暴力破解；若有验证码，也可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次奇葩的渗透测试">
+<meta property="og:url" content="http://e4st.world/2017/04/24/记一次奇葩的渗透测试/index.html">
 <meta property="og:site_name" content="e4st' blog">
-<meta property="og:description" content="Norman.Chew
-nightraid
-secvul团队">
-<meta property="og:updated_time" content="2017-02-10T10:02:49.000Z">
+<meta property="og:description" content="前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。
+
+0x00 信息搜集前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：可以发现，其中有admin后台，访问如图：对于后台我一般会做如下尝试：
+
+弱口令走一波
+在用户名处填写注入语句，一般使用’来测试
+若无验证码，可以尝试暴力破解；若有验证码，也可">
+<meta property="og:image" content="http://storage1.imgchr.com/it0z9.md.png">
+<meta property="og:image" content="http://storage1.imgchr.com/itDMR.md.png">
+<meta property="og:image" content="http://storage1.imgchr.com/itrs1.md.png">
+<meta property="og:image" content="http://storage1.imgchr.com/it6Z6.md.png">
+<meta property="og:image" content="http://storage1.imgchr.com/itgIO.png">
+<meta property="og:image" content="http://storage1.imgchr.com/itsqx.md.png">
+<meta property="og:image" content="http://storage1.imgchr.com/itcdK.md.png">
+<meta property="og:updated_time" content="2017-04-24T13:56:08.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="friends">
-<meta name="twitter:description" content="Norman.Chew
-nightraid
-secvul团队">
+<meta name="twitter:title" content="记一次奇葩的渗透测试">
+<meta name="twitter:description" content="前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。
+
+0x00 信息搜集前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：可以发现，其中有admin后台，访问如图：对于后台我一般会做如下尝试：
+
+弱口令走一波
+在用户名处填写注入语句，一般使用’来测试
+若无验证码，可以尝试暴力破解；若有验证码，也可">
+<meta name="twitter:image" content="http://storage1.imgchr.com/it0z9.md.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -62,7 +82,7 @@ secvul团队">
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>friends | e4st&#39; blog</title>
+<title>记一次奇葩的渗透测试 | e4st&#39; blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -72,7 +92,7 @@ secvul团队">
         fancybox: true,
         animate: true,
         isHome: false,
-        isPost: false,
+        isPost: true,
         isArchive: false,
         isTag: false,
         isCategory: false,
@@ -226,11 +246,11 @@ secvul团队">
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="page-undefined" class="article article-type-page" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-记一次奇葩的渗透测试" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/friends/index.html" class="article-date">
-      <time datetime="2017-02-10T09:47:09.000Z" itemprop="datePublished">2017-02-10</time>
+      <a href="/2017/04/24/记一次奇葩的渗透测试/" class="article-date">
+      <time datetime="2017-04-24T08:55:01.000Z" itemprop="datePublished">2017-04-24</time>
 </a>
 
 
@@ -245,7 +265,7 @@ secvul团队">
         
   
     <h1 class="article-title" itemprop="name">
-      friends
+      记一次奇葩的渗透测试
     </h1>
   
 
@@ -255,6 +275,10 @@ secvul团队">
         
 
         
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/代码审计/">代码审计</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
+    </div>
+
         <div class="clearfix"></div>
       </div>
       
@@ -262,32 +286,23 @@ secvul团队">
     <div class="article-entry" itemprop="articleBody">
       
           
-              <style>
-    .article-meta { display: none; }
-    #container .article .article-title { padding-right: 0; }
-    .article-header {
-        padding: 0;
-        padding-top: 26px;
-        border-left: none;
-        text-align: center;
-    }
-    .article-header:hover { border-left: none; }
-    .article-title { font-size: 1.6em }
-    .article-entry hr { margin: 0;}
-    .article-meta,
-    #container .article-info-post.article-info { display: none;}
-    #container .article .article-title { padding: 0; }
-</style>
-
-
-          
-        <blockquote>
+        <hr>
+<p>前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。</p>
+<hr>
+<h1 id="0x00-信息搜集"><a href="#0x00-信息搜集" class="headerlink" title="0x00 信息搜集"></a>0x00 信息搜集</h1><p>前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：<br><img src="http://storage1.imgchr.com/it0z9.md.png" alt=""><br>可以发现，其中有admin后台，访问如图：<br><img src="http://storage1.imgchr.com/itDMR.md.png" alt=""><br>对于后台我一般会做如下尝试：</p>
 <ul>
-<li><a href="https://bypass.world/" target="_blank" rel="external">Norman.Chew</a></li>
-<li><a href="http://4rt1st.me" target="_blank" rel="external">nightraid</a></li>
-<li><a href="https://secvul.com/" target="_blank" rel="external">secvul团队</a></li>
+<li>弱口令走一波</li>
+<li>在用户名处填写注入语句，一般使用’来测试</li>
+<li>若无验证码，可以尝试暴力破解；若有验证码，也可以尝试暴力破解 </li>
 </ul>
-</blockquote>
+<p>做完尝试之后发现此处并没有注入，但后台能够进行暴力破解，验证码不会失效。然后拿出一堆几十年前的字典狂爆一波，最后GG。。。。</p>
+<h1 id="0x01-尝试可能的漏洞"><a href="#0x01-尝试可能的漏洞" class="headerlink" title="0x01 尝试可能的漏洞"></a>0x01 尝试可能的漏洞</h1><p>  前面没发现太多有用的东西，还是看看站点本身。按照习惯，去放问了网站新闻等内容，通常类似<code>php?id=</code>的url有可能有注入等漏洞，兴高采烈的去各种尝试，后来发现页面不会有任何改变，这里猜测后台应该使用了intval等函数强制转换过。<br>  注入看来是没戏了，然后又发现了一个msg.php，打开一看，果然是留言板，插入xss恶意代码盲打一波。结果到最后，没有任何收获，无解啊。<br>  到目前为止，我们只有一个暴力破解可以使用，奈何字典不够强大，我们怎么继续下去呢？</p>
+<ul>
+<li>旁注？醒醒吧，就这一个站！</li>
+<li>C段？挺花时间的要不继续看看？</li>
+</ul>
+<h1 id="0x02-再次收集信息"><a href="#0x02-再次收集信息" class="headerlink" title="0x02 再次收集信息"></a>0x02 再次收集信息</h1><p>  这次我祭出了更强大的御剑，不对，是更强大的字典，终于皇天不负有心人，在强大的字典面前，一个叫<code>zip.php</code>进入了我的视线，打开如下图：<br><img src="http://storage1.imgchr.com/itrs1.md.png" alt=""><br>  这是一个打包程序，我们能不能把源码打包直接下载下来，这样我们不就有可能获得管理员的账号密码了嘛？然而看到这里需要输入密码，可能我们又会去爆破，但是这里有更有价值的信息，我们访问图中的url，下载这套代码，第一行代码吸引了我：<br><img src="http://storage1.imgchr.com/it6Z6.md.png" alt=""><br>  尝试失败，说明管理员修改了密码。怎么办呢？我们能不能绕过登陆直接打包呢？<br>  我们可以来审一下代码：<br><img src="http://storage1.imgchr.com/itgIO.png" alt=""><br>  可以看到，当<code>$_REQUEST[&quot;myaction&quot;])</code>没有传到后台时，则显示密码框，需要用户登陆，若<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dolist&#39;</code>时，需要验证密码，我们跳过这段，看看后面是否还有<code>else if</code>这类代码，结果发现有如下代码：<br><img src="http://storage1.imgchr.com/itsqx.md.png" alt=""><br>  也就是说，当<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dozip&#39;</code>时，程序就会执行打包函数，无需登录即可完成打包，只要找到需要打包的参数的代码就OK了。<br><img src="http://storage1.imgchr.com/itcdK.md.png" alt=""><br>  可以发现，value这里的值改为对应目录，就可以执行打包了<br>结果打包下来，只有一个sql文件(然而压缩文件1.1G,解压就一个400多k的sql文件？？)<br>从sql里面发现了管理员账号密码，后续的上传shell也非常简单，这里就不多说了。</p>
+<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>  信息搜集才是王道，只有搜集到足够多有用的信息，思路也自然会打开。然后就请各位大佬，多多指教咯。</p>
 
       
     </div>
@@ -295,10 +310,59 @@ secvul团队">
   </div>
   
     
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/04/24/记一次奇葩的渗透测试/">记一次奇葩的渗透测试</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">c0deeast</a></p>
+        <p><span>发布时间:</span>2017-04-24, 16:55:01</p>
+        <p><span>最后更新:</span>2017-04-24, 21:56:08</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/24/记一次奇葩的渗透测试/" title="记一次奇葩的渗透测试">http://e4st.world/2017/04/24/记一次奇葩的渗透测试/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/04/24/记一次奇葩的渗透测试/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
 
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/02/08/hello-world/">
+                    Hello Hexo
+                </a>
+            </div>
+        
+    </nav>
 
   
 </article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-信息搜集"><span class="toc-number">1.</span> <span class="toc-text">0x00 信息搜集</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-尝试可能的漏洞"><span class="toc-number">2.</span> <span class="toc-text">0x01 尝试可能的漏洞</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-再次收集信息"><span class="toc-number">3.</span> <span class="toc-text">0x02 再次收集信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-总结"><span class="toc-number">4.</span> <span class="toc-text">0x03 总结</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
 
 
 
@@ -316,7 +380,7 @@ secvul团队">
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"friends　| e4st' blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"记一次奇葩的渗透测试　| e4st' blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -331,6 +395,24 @@ secvul团队">
 
     
 
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/02/08/hello-world/" title="下一篇: Hello Hexo">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/记一次奇葩的渗透测试/">记一次奇葩的渗透测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/08/hello-world/">Hello Hexo</a></li></ul>
 
 
 
