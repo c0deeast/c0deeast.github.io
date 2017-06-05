@@ -338,7 +338,7 @@
         <hr>
 <p>前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。</p>
 <hr>
-<h1 id="0x00-信息搜集"><a href="#0x00-信息搜集" class="headerlink" title="0x00 信息搜集"></a>0x00 信息搜集</h1><p>前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：<br><img src="http://storage1.imgchr.com/it0z9.md.png" alt=""><br>可以发现，其中有admin后台，访问如图：<br><img src="http://storage1.imgchr.com/itDMR.md.png" alt=""><br>对于后台我一般会做如下尝试：</p>
+<h1 id="0x00-信息搜集"><a href="#0x00-信息搜集" class="headerlink" title="0x00 信息搜集"></a>0x00 信息搜集</h1><p>前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：<br><img src="http://i4.buimg.com/596268/b35b70b17d8eba3as.png" alt=""><br>可以发现，其中有admin后台，访问如图：<br><img src="http://i4.buimg.com/596268/ec40338cc9ceaba7s.png" alt=""><br>对于后台我一般会做如下尝试：</p>
 <ul>
 <li>弱口令走一波</li>
 <li>在用户名处填写注入语句，一般使用’来测试</li>
@@ -350,7 +350,7 @@
 <li>旁注？醒醒吧，就这一个站！</li>
 <li>C段？挺花时间的要不继续看看？</li>
 </ul>
-<h1 id="0x02-再次收集信息"><a href="#0x02-再次收集信息" class="headerlink" title="0x02 再次收集信息"></a>0x02 再次收集信息</h1><p>  这次我祭出了更强大的御剑，不对，是更强大的字典，终于皇天不负有心人，在强大的字典面前，一个叫<code>zip.php</code>进入了我的视线，打开如下图：<br><img src="http://storage1.imgchr.com/itrs1.md.png" alt=""><br>  这是一个打包程序，我们能不能把源码打包直接下载下来，这样我们不就有可能获得管理员的账号密码了嘛？然而看到这里需要输入密码，可能我们又会去爆破，但是这里有更有价值的信息，我们访问图中的url，下载这套代码，第一行代码吸引了我：<br><img src="http://storage1.imgchr.com/it6Z6.md.png" alt=""><br>  尝试失败，说明管理员修改了密码。怎么办呢？我们能不能绕过登陆直接打包呢？<br>  我们可以来审一下代码：<br><img src="http://storage1.imgchr.com/itgIO.png" alt=""><br>  可以看到，当<code>$_REQUEST[&quot;myaction&quot;])</code>没有传到后台时，则显示密码框，需要用户登陆，若<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dolist&#39;</code>时，需要验证密码，我们跳过这段，看看后面是否还有<code>else if</code>这类代码，结果发现有如下代码：<br><img src="http://storage1.imgchr.com/itsqx.md.png" alt=""><br>  也就是说，当<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dozip&#39;</code>时，程序就会执行打包函数，无需登录即可完成打包，只要找到需要打包的参数的代码就OK了。<br><img src="http://storage1.imgchr.com/itcdK.md.png" alt=""><br>  可以发现，value这里的值改为对应目录，就可以执行打包了<br>结果打包下来，只有一个sql文件(然而压缩文件1.1G,解压就一个400多k的sql文件？？)<br>从sql里面发现了管理员账号密码，后续的上传shell也非常简单，这里就不多说了。</p>
+<h1 id="0x02-再次收集信息"><a href="#0x02-再次收集信息" class="headerlink" title="0x02 再次收集信息"></a>0x02 再次收集信息</h1><p>  这次我祭出了更强大的御剑，不对，是更强大的字典，终于皇天不负有心人，在强大的字典面前，一个叫<code>zip.php</code>进入了我的视线，打开如下图：<br><img src="http://i4.buimg.com/596268/6320f5d1f607a53es.png" alt=""><br>  这是一个打包程序，我们能不能把源码打包直接下载下来，这样我们不就有可能获得管理员的账号密码了嘛？然而看到这里需要输入密码，可能我们又会去爆破，但是这里有更有价值的信息，我们访问图中的url，下载这套代码，第一行代码吸引了我：<br><img src="http://i4.buimg.com/596268/27b1ec7a321220f0s.png" alt=""><br>  尝试失败，说明管理员修改了密码。怎么办呢？我们能不能绕过登陆直接打包呢？<br>  我们可以来审一下代码：<br><img src="http://i4.buimg.com/596268/ce13e79302de4cf8s.png" alt=""><br>  可以看到，当<code>$_REQUEST[&quot;myaction&quot;])</code>没有传到后台时，则显示密码框，需要用户登陆，若<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dolist&#39;</code>时，需要验证密码，我们跳过这段，看看后面是否还有<code>else if</code>这类代码，结果发现有如下代码：<br><img src="http://i4.buimg.com/596268/70499fd6908811e6s.png" alt=""><br>  也就是说，当<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dozip&#39;</code>时，程序就会执行打包函数，无需登录即可完成打包，只要找到需要打包的参数的代码就OK了。<br><img src="http://i4.buimg.com/596268/f33e219bb3aa0a52s.png" alt=""><br>  可以发现，value这里的值改为对应目录，就可以执行打包了<br>结果打包下来，只有一个sql文件(然而压缩文件1.1G,解压就一个400多k的sql文件？？)<br>从sql里面发现了管理员账号密码，后续的上传shell也非常简单，这里就不多说了。</p>
 <h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>  信息搜集才是王道，只有搜集到足够多有用的信息，思路也自然会打开。然后就请各位大佬，多多指教咯。</p>
 
       
