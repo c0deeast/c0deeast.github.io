@@ -33,14 +33,14 @@
 弱口令走一波
 在用户名处填写注入语句，一般使用’来测试
 若无验证码，可以尝试暴力破解；若有验证码，也可">
-<meta property="og:image" content="http://i4.buimg.com/596268/b35b70b17d8eba3as.png">
-<meta property="og:image" content="http://i4.buimg.com/596268/ec40338cc9ceaba7s.png">
-<meta property="og:image" content="http://i4.buimg.com/596268/6320f5d1f607a53es.png">
-<meta property="og:image" content="http://i4.buimg.com/596268/27b1ec7a321220f0s.png">
-<meta property="og:image" content="http://i4.buimg.com/596268/ce13e79302de4cf8s.png">
-<meta property="og:image" content="http://i4.buimg.com/596268/70499fd6908811e6s.png">
-<meta property="og:image" content="http://i4.buimg.com/596268/f33e219bb3aa0a52s.png">
-<meta property="og:updated_time" content="2017-06-05T13:00:32.000Z">
+<meta property="og:image" content="https://i.loli.net/2017/09/25/59c8621477e9f.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/25/59c8623c23f93.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/25/59c8622d91ead.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/25/59c862514a0bf.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/25/59c8624c93f8e.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/25/59c862656ff56.png">
+<meta property="og:image" content="https://i.loli.net/2017/09/25/59c862208e248.png">
+<meta property="og:updated_time" content="2017-09-25T02:01:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记一次奇葩的渗透测试">
 <meta name="twitter:description" content="前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。
@@ -50,7 +50,7 @@
 弱口令走一波
 在用户名处填写注入语句，一般使用’来测试
 若无验证码，可以尝试暴力破解；若有验证码，也可">
-<meta name="twitter:image" content="http://i4.buimg.com/596268/b35b70b17d8eba3as.png">
+<meta name="twitter:image" content="https://i.loli.net/2017/09/25/59c8621477e9f.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -254,7 +254,7 @@
             </nav>
         </header>                
     </div>
-    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+    <link class="menu-list" tags="Tags" friends="Friends" about="About Me"/>
 </nav>
       <div class="body-wrap"><article id="post-记一次奇葩的渗透测试" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -299,7 +299,7 @@
         <hr>
 <p>前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。</p>
 <hr>
-<h1 id="0x00-信息搜集"><a href="#0x00-信息搜集" class="headerlink" title="0x00 信息搜集"></a>0x00 信息搜集</h1><p>前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：<br><img src="http://i4.buimg.com/596268/b35b70b17d8eba3as.png" alt=""><br>可以发现，其中有admin后台，访问如图：<br><img src="http://i4.buimg.com/596268/ec40338cc9ceaba7s.png" alt=""><br>对于后台我一般会做如下尝试：</p>
+<h1 id="0x00-信息搜集"><a href="#0x00-信息搜集" class="headerlink" title="0x00 信息搜集"></a>0x00 信息搜集</h1><p>前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：<br><img src="https://i.loli.net/2017/09/25/59c8621477e9f.png" alt=""><br>可以发现，其中有admin后台，访问如图：<br><img src="https://i.loli.net/2017/09/25/59c8623c23f93.png" alt=""><br>对于后台我一般会做如下尝试：</p>
 <ul>
 <li>弱口令走一波</li>
 <li>在用户名处填写注入语句，一般使用’来测试</li>
@@ -311,7 +311,7 @@
 <li>旁注？醒醒吧，就这一个站！</li>
 <li>C段？挺花时间的要不继续看看？</li>
 </ul>
-<h1 id="0x02-再次收集信息"><a href="#0x02-再次收集信息" class="headerlink" title="0x02 再次收集信息"></a>0x02 再次收集信息</h1><p>  这次我祭出了更强大的御剑，不对，是更强大的字典，终于皇天不负有心人，在强大的字典面前，一个叫<code>zip.php</code>进入了我的视线，打开如下图：<br><img src="http://i4.buimg.com/596268/6320f5d1f607a53es.png" alt=""><br>  这是一个打包程序，我们能不能把源码打包直接下载下来，这样我们不就有可能获得管理员的账号密码了嘛？然而看到这里需要输入密码，可能我们又会去爆破，但是这里有更有价值的信息，我们访问图中的url，下载这套代码，第一行代码吸引了我：<br><img src="http://i4.buimg.com/596268/27b1ec7a321220f0s.png" alt=""><br>  尝试失败，说明管理员修改了密码。怎么办呢？我们能不能绕过登陆直接打包呢？<br>  我们可以来审一下代码：<br><img src="http://i4.buimg.com/596268/ce13e79302de4cf8s.png" alt=""><br>  可以看到，当<code>$_REQUEST[&quot;myaction&quot;])</code>没有传到后台时，则显示密码框，需要用户登陆，若<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dolist&#39;</code>时，需要验证密码，我们跳过这段，看看后面是否还有<code>else if</code>这类代码，结果发现有如下代码：<br><img src="http://i4.buimg.com/596268/70499fd6908811e6s.png" alt=""><br>  也就是说，当<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dozip&#39;</code>时，程序就会执行打包函数，无需登录即可完成打包，只要找到需要打包的参数的代码就OK了。<br><img src="http://i4.buimg.com/596268/f33e219bb3aa0a52s.png" alt=""><br>  可以发现，value这里的值改为对应目录，就可以执行打包了<br>结果打包下来，只有一个sql文件(然而压缩文件1.1G,解压就一个400多k的sql文件？？)<br>从sql里面发现了管理员账号密码，后续的上传shell也非常简单，这里就不多说了。</p>
+<h1 id="0x02-再次收集信息"><a href="#0x02-再次收集信息" class="headerlink" title="0x02 再次收集信息"></a>0x02 再次收集信息</h1><p>  这次我祭出了更强大的御剑，不对，是更强大的字典，终于皇天不负有心人，在强大的字典面前，一个叫<code>zip.php</code>进入了我的视线，打开如下图：<br><img src="https://i.loli.net/2017/09/25/59c8622d91ead.png" alt=""><br>  这是一个打包程序，我们能不能把源码打包直接下载下来，这样我们不就有可能获得管理员的账号密码了嘛？然而看到这里需要输入密码，可能我们又会去爆破，但是这里有更有价值的信息，我们访问图中的url，下载这套代码，第一行代码吸引了我：<br><img src="https://i.loli.net/2017/09/25/59c862514a0bf.png" alt=""><br>  尝试失败，说明管理员修改了密码。怎么办呢？我们能不能绕过登陆直接打包呢？<br>  我们可以来审一下代码：<br><img src="https://i.loli.net/2017/09/25/59c8624c93f8e.png" alt=""><br>  可以看到，当<code>$_REQUEST[&quot;myaction&quot;])</code>没有传到后台时，则显示密码框，需要用户登陆，若<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dolist&#39;</code>时，需要验证密码，我们跳过这段，看看后面是否还有<code>else if</code>这类代码，结果发现有如下代码：<br><img src="https://i.loli.net/2017/09/25/59c862656ff56.png" alt=""><br>  也就是说，当<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dozip&#39;</code>时，程序就会执行打包函数，无需登录即可完成打包，只要找到需要打包的参数的代码就OK了。<br><img src="https://i.loli.net/2017/09/25/59c862208e248.png" alt=""><br>  可以发现，value这里的值改为对应目录，就可以执行打包了<br>结果打包下来，只有一个sql文件(然而压缩文件1.1G,解压就一个400多k的sql文件？？)<br>从sql里面发现了管理员账号密码，后续的上传shell也非常简单，这里就不多说了。</p>
 <h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>  信息搜集才是王道，只有搜集到足够多有用的信息，思路也自然会打开。然后就请各位大佬，多多指教咯。</p>
 
       
@@ -321,17 +321,17 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/04/24/记一次奇葩的渗透测试/">记一次奇葩的渗透测试</a></p>
-        <p><span>文章作者:</span><a href="/" title="回到主页">c0deeast</a></p>
-        <p><span>发布时间:</span>2017-04-24, 16:55:01</p>
-        <p><span>最后更新:</span>2017-06-05, 21:00:32</p>
+        <p><span>Title:</span><a href="/2017/04/24/记一次奇葩的渗透测试/">记一次奇葩的渗透测试</a></p>
+        <p><span>Author:</span><a href="/" title="Back to Homepage">c0deeast</a></p>
+        <p><span>Created:</span>2017-04-24, 16:55:01</p>
+        <p><span>Updated:</span>2017-09-25, 10:01:15</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/04/24/记一次奇葩的渗透测试/" title="记一次奇葩的渗透测试">http://e4st.world/2017/04/24/记一次奇葩的渗透测试/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/04/24/记一次奇葩的渗透测试/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>Full URL:</span><a class="post-url" href="/2017/04/24/记一次奇葩的渗透测试/" title="记一次奇葩的渗透测试">http://e4st.world/2017/04/24/记一次奇葩的渗透测试/</a>
+            <span class="copy-path" data-clipboard-text="From http://e4st.world/2017/04/24/记一次奇葩的渗透测试/　　By c0deeast" title="Copy Article&#39;s Link &amp; Author"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
-            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+            <span>License:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> Keep Link &amp; Author if Distribute.
         </p>
     </div>
 
@@ -358,7 +358,7 @@
 </article>
 
     <div id="toc" class="toc-article">
-        <strong class="toc-title">文章目录</strong>
+        <strong class="toc-title">Contents</strong>
         
             <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-信息搜集"><span class="toc-number">1.</span> <span class="toc-text">0x00 信息搜集</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-尝试可能的漏洞"><span class="toc-number">2.</span> <span class="toc-text">0x01 尝试可能的漏洞</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-再次收集信息"><span class="toc-number">3.</span> <span class="toc-text">0x02 再次收集信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-总结"><span class="toc-number">4.</span> <span class="toc-text">0x03 总结</span></a></li></ol>
         
@@ -374,10 +374,10 @@
         }
     </style>
 
-    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+    <input type="button" id="tocButton" value="Hide"  title="Show or Hide Table of Contents">
 
     <script>
-        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+        yiliaConfig.toc = ["Hide", "Show", !!"false"];
     </script>
 
 
@@ -416,15 +416,15 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/" title="上一篇: Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">
+            <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/" title="Pre: Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">
                 <i class="fa fa-angle-left"></i>
             </a>
         
 
-        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        <a title="Mini Archives"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/02/08/hello-world/" title="下一篇: Hello Hexo">
+            <a href="/2017/02/08/hello-world/" title="Next: Hello Hexo">
                 <i class="fa fa-angle-right"></i>
             </a>
         
@@ -448,14 +448,14 @@
             </div>
             <div class="footer-right">
             <p>Hosted by <a href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a></p>
-                  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+                  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
             </div>
         </div>
         
             <div class="visit">
                 
                     <span id="busuanzi_container_site_pv" style='display:none'>
-                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
                         </span>
                     </span>
                 
@@ -464,7 +464,7 @@
                 
                 
                     <span id="busuanzi_container_page_pv" style='display:none'>
-                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
                         </span>
                     </span>
                 
@@ -497,9 +497,9 @@
 
 
 <div class="scroll" id="scroll">
-    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
-    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
-    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+    <a href="#" title="Back to Top"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="Comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="Go to Bottom"><i class="fa fa-arrow-down"></i></a>
 </div>
 <script>
     // Open in New Window
