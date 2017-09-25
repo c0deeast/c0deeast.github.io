@@ -15,33 +15,33 @@
 
 
 
-<meta name="description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。
+<meta name="description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。目前测试的版本为网站安全狗（apache版）4.0.18089，截止2017/09/25官网最新版
 
 0x00 各种尝试被拦语句首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：
 
-and 1=1/and ‘a’=’a’类型union select/union distinct select等user()、database">
+and 1=1/and ‘a’=’a’类型u">
 <meta property="og:type" content="article">
 <meta property="og:title" content="打狗棒法-注入过狗姿势">
 <meta property="og:url" content="http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/index.html">
 <meta property="og:site_name" content="e4st' blog">
-<meta property="og:description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。
+<meta property="og:description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。目前测试的版本为网站安全狗（apache版）4.0.18089，截止2017/09/25官网最新版
 
 0x00 各种尝试被拦语句首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：
 
-and 1=1/and ‘a’=’a’类型union select/union distinct select等user()、database">
+and 1=1/and ‘a’=’a’类型u">
 <meta property="og:image" content="https://i.loli.net/2017/09/24/59c7ab77294f0.png">
 <meta property="og:image" content="https://i.loli.net/2017/09/24/59c7ad8e14c69.png">
 <meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b80bccb38.png">
 <meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b8b46f9ce.png">
 <meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b9014a585.png">
-<meta property="og:updated_time" content="2017-09-24T13:57:35.000Z">
+<meta property="og:updated_time" content="2017-09-25T00:28:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="打狗棒法-注入过狗姿势">
-<meta name="twitter:description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。
+<meta name="twitter:description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。目前测试的版本为网站安全狗（apache版）4.0.18089，截止2017/09/25官网最新版
 
 0x00 各种尝试被拦语句首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：
 
-and 1=1/and ‘a’=’a’类型union select/union distinct select等user()、database">
+and 1=1/and ‘a’=’a’类型u">
 <meta name="twitter:image" content="https://i.loli.net/2017/09/24/59c7ab77294f0.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
@@ -289,7 +289,7 @@ and 1=1/and ‘a’=’a’类型union select/union distinct select等user()、d
       
           
         <hr>
-<p>前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。</p>
+<p>前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。目前测试的版本为网站安全狗（apache版）4.0.18089，截止2017/09/25官网最新版</p>
 <hr>
 <h1 id="0x00-各种尝试"><a href="#0x00-各种尝试" class="headerlink" title="0x00 各种尝试"></a>0x00 各种尝试</h1><h3 id="被拦语句"><a href="#被拦语句" class="headerlink" title="被拦语句"></a>被拦语句</h3><p>首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：</p>
 <blockquote>
@@ -324,7 +324,7 @@ and 1=1/and ‘a’=’a’类型union select/union distinct select等user()、d
         <p><span>本文标题:</span><a href="/2017/09/24/打狗棒法-注入过狗姿势/">打狗棒法-注入过狗姿势</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">c0deeast</a></p>
         <p><span>发布时间:</span>2017-09-24, 20:25:04</p>
-        <p><span>最后更新:</span>2017-09-24, 21:57:35</p>
+        <p><span>最后更新:</span>2017-09-25, 08:28:35</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2017/09/24/打狗棒法-注入过狗姿势/" title="打狗棒法-注入过狗姿势">http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/</a>
             <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
