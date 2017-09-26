@@ -284,6 +284,8 @@ var _hmt = _hmt || [];
 <p>  这里安全狗没有拦截，网站响应时间是6s（没有sleep也有1s的响应，所以延时5s没有问题，虚拟机卡啊T_T）<br>  后续尝试发现，user%0a()也是可以绕过的。</p>
 <blockquote>
 <p>ps:这里提个问题，用这种形式的注入，如何注入到表中内容，暂时没有头绪，望大佬指教。</p>
+<hr>
+<p>  问题已解决（还是基础不扎实）。<br>可以使用<em>and if(substr((select * from admin),1,1),1,0)</em>这样的形式注入出数据<br>  具体注入还有相关的坑需要绕过，这个大家可以自行研究，利用本文的方法是可以过的。</p>
 </blockquote>
 <h1 id="0x02-第二种思路"><a href="#0x02-第二种思路" class="headerlink" title="0x02 第二种思路"></a>0x02 第二种思路</h1><p>  回到刚才的问题，没有更进一步获取数据，还是把目光聚焦在<code>union select</code>的绕过。<br>  这里试过很多坑，但还是把尝试过的payload发出来，说不定另外的waf能过呢，也包含了一些mysql的特性：</p>
 <blockquote>
