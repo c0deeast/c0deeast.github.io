@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>e4st&#39; blog</title>
+  
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://e4st.world/"/>
+  <updated>2017-09-26T09:12:55.000Z</updated>
+  <id>http://e4st.world/</id>
+  
+  <author>
+    <name>c0deeast</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>打狗棒法-注入过狗姿势</title>
+    <link href="http://e4st.world/2017/09/24/%E6%89%93%E7%8B%97%E6%A3%92%E6%B3%95-%E6%B3%A8%E5%85%A5%E8%BF%87%E7%8B%97%E5%A7%BF%E5%8A%BF/"/>
+    <id>http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/</id>
+    <published>2017-09-24T12:25:04.000Z</published>
+    <updated>2017-09-26T09:12:55.000Z</updated>
+    
+    <content type="html"><![CDATA[<hr><p>前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。目前测试的版本为网站安全狗（apache版）4.0.18089，截止2017/09/25官网最新版</p><hr><h1 id="0x00-各种尝试"><a href="#0x00-各种尝试" class="headerlink" title="0x00 各种尝试"></a>0x00 各种尝试</h1><h3 id="被拦语句"><a href="#被拦语句" class="headerlink" title="被拦语句"></a>被拦语句</h3><p>首先尝试了各种常用的payload，看看狗拦了哪些操作，发现如下语句会拦截：</p><blockquote><p>and 1=1/and ‘a’=’a’类型<br>union select/union distinct select等<br>user()、database()等函数<br>…</p></blockquote><h3 id="放行语句"><a href="#放行语句" class="headerlink" title="放行语句"></a>放行语句</h3><p>在上面尝试中发现如下语句未被拦截：</p><blockquote><p>order by<br>select、union分开使用<br>and if<br>…</p></blockquote><h1 id="0x01-第一种思路"><a href="#0x01-第一种思路" class="headerlink" title="0x01 第一种思路"></a>0x01 第一种思路</h1><p>  先尝试绕过<code>and 1=1/and &#39;a&#39;=&#39;a&#39;</code>的限制<br>  这里可以使用内联注释进行绕过： <code>and /*!1*/=/*!1*/</code>即可绕过<br>  <img src="https://i.loli.net/2017/09/24/59c7ab77294f0.png" alt=""><br>  接着我们尝试一下利用时间盲注来进行绕过，我们先尝试一下正常的语句：</p><blockquote><p> ‘ and if(substr(user(),1,1)=’r’,sleep(5),1– -<br>  这个语句肯定会被拦截，因为含有user()等敏感函数，那么怎么绕过呢，我们试试user/**/()这样的形式<br> ‘ and if(substr(user/**/(),1,1)=’r’,sleep/**/(5),1– -<br>  <img src="https://i.loli.net/2017/09/24/59c7ad8e14c69.png" alt=""></p></blockquote><p>  这里安全狗没有拦截，网站响应时间是6s（没有sleep也有1s的响应，所以延时5s没有问题，虚拟机卡啊T_T）<br>  后续尝试发现，user%0a()也是可以绕过的。</p><blockquote><p>ps:这里提个问题，用这种形式的注入，如何注入到表中内容，暂时没有头绪，望大佬指教。</p><hr><p>  问题已解决（还是基础不扎实）。<br>可以使用<em>and if(substr((select * from admin),1,1),1,0)</em>这样的形式注入出数据<br>  具体注入还有相关的坑需要绕过，这个大家可以自行研究，利用本文的方法是可以过的。</p></blockquote><h1 id="0x02-第二种思路"><a href="#0x02-第二种思路" class="headerlink" title="0x02 第二种思路"></a>0x02 第二种思路</h1><p>  回到刚才的问题，没有更进一步获取数据，还是把目光聚焦在<code>union select</code>的绕过。<br>  这里试过很多坑，但还是把尝试过的payload发出来，说不定另外的waf能过呢，也包含了一些mysql的特性：</p><blockquote><p>union /*!(select@1*/,2,3)  //select后面可跟@,!,~，如select!1,select~1<br>union/**//**/(/*!select@1*/,2,3)<br>union/*!/**/*//*!(select@1*/,2,3)<br>…</p></blockquote><p>  后来发现怎么也绕不过去，然后查询资料发现union select等价于union distinct select<br>  进行尝试，失败：<br>  <img src="https://i.loli.net/2017/09/24/59c7b80bccb38.png" alt=""><br>  继续尝试，给distinct加内联注释，失败：<br>  <img src="https://i.loli.net/2017/09/24/59c7b8b46f9ce.png" alt=""><br>  在distinct前面加上/**/,成功：<br>  <img src="https://i.loli.net/2017/09/24/59c7b9014a585.png" alt=""></p><h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>  思路比较混乱，还需了解更多的数据库特性，还有正则表达式，才能深入了解过waf的思路技巧。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;hr&gt;
+&lt;p&gt;前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。目前测试的版本为网站安全狗（apache版）4.0.18089，截止2017/09/25官网最新版&lt;/p&gt;
+&lt;hr&gt;
+
+      
+    
+    </summary>
+    
+    
+      <category term="bypass" scheme="http://e4st.world/tags/bypass/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Samba远程命令执行漏洞(CVE-2017-7494)攻击演示</title>
+    <link href="http://e4st.world/2017/06/02/Samba%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E(CVE-2017-7494)%E6%94%BB%E5%87%BB%E6%BC%94%E7%A4%BA/"/>
+    <id>http://e4st.world/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/</id>
+    <published>2017-06-02T13:21:49.000Z</published>
+    <updated>2017-09-25T01:53:58.000Z</updated>
+    
+    <content type="html"><![CDATA[<hr><p>废话：最近一直忙着写剧本写剧本写剧本（我不是安服吗？），直到今天才有空复现这个漏洞，以后还是要尽力多抽时间学习总结哈</p><hr><h1 id="0x00-漏洞信息"><a href="#0x00-漏洞信息" class="headerlink" title="0x00 漏洞信息"></a><strong>0x00 漏洞信息</strong></h1><p>2017年5月24日Samba发布了4.6.4版本，中间修复了一个严重的远程代码执行漏洞，漏洞编号CVE-2017-7494，漏洞影响了Samba 3.5.0 之后到4.6.4/4.5.10/4.4.14中间的所有版本。</p><h1 id="0x01-利用条件"><a href="#0x01-利用条件" class="headerlink" title="0x01 利用条件"></a><strong>0x01 利用条件</strong></h1><ul><li>服务端共享目录有访问权限。</li><li>服务端共享目录有写入权限。</li><li>服务端共享目录的物理路径已知或者可猜解。</li></ul><h1 id="0x02-复现过程"><a href="#0x02-复现过程" class="headerlink" title="0x02 复现过程"></a><strong>0x02 复现过程</strong></h1><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a><strong>环境搭建</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ docker pull medicean/vulapps:s_samba_1  //拉取或更新指定镜像</div><div class="line">$ docker run -d -p 445:445 -p 139:139 -p 138:138 -p 137:137 medicean/vulapps:s_samba_1  //-d:以守护进程方式运行（后台）,-p &lt;HOT_PORT&gt;:&lt;CONTAINER_PORT&gt;：主机指定端口绑定容器指定端口</div></pre></td></tr></table></figure><h3 id="漏洞验证"><a href="#漏洞验证" class="headerlink" title="漏洞验证"></a><strong>漏洞验证</strong></h3><p>1、msf更新至最新，已有相应的exp,查询is_known_pipename<br><img src="https://i.loli.net/2017/09/25/59c8614eef3c8.png" alt=""><br>2、选择该模块后我们show options，查看需要设置的参数，如下图所示，设置RHOST,target设为linux x86_64（对应测试环境）<br><img src="https://i.loli.net/2017/09/25/59c8615460bb6.png" alt=""><br>3、然后设置监听，设置完监听后，运行即可获取shell<br><img src="https://i.loli.net/2017/09/25/59c8615b649b2.png" alt=""></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;hr&gt;
+&lt;p&gt;废话：最近一直忙着写剧本写剧本写剧本（我不是安服吗？），直到今天才有空复现这个漏洞，以后还是要尽力多抽时间学习总结哈&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&quot;0x00-漏洞信息&quot;&gt;&lt;a href=&quot;#0x00-漏洞信息&quot; class=&quot;headerlink&quot; title
+      
+    
+    </summary>
+    
+    
+      <category term="渗透测试" scheme="http://e4st.world/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+      <category term="CVE" scheme="http://e4st.world/tags/CVE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>记一次奇葩的渗透测试</title>
+    <link href="http://e4st.world/2017/04/24/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A5%87%E8%91%A9%E7%9A%84%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    <id>http://e4st.world/2017/04/24/记一次奇葩的渗透测试/</id>
+    <published>2017-04-24T08:55:01.000Z</published>
+    <updated>2017-09-25T02:01:15.000Z</updated>
+    
+    <content type="html"><![CDATA[<hr><p>前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。</p><hr><h1 id="0x00-信息搜集"><a href="#0x00-信息搜集" class="headerlink" title="0x00 信息搜集"></a>0x00 信息搜集</h1><p>前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：<br><img src="https://i.loli.net/2017/09/25/59c8621477e9f.png" alt=""><br>可以发现，其中有admin后台，访问如图：<br><img src="https://i.loli.net/2017/09/25/59c8623c23f93.png" alt=""><br>对于后台我一般会做如下尝试：</p><ul><li>弱口令走一波</li><li>在用户名处填写注入语句，一般使用’来测试</li><li>若无验证码，可以尝试暴力破解；若有验证码，也可以尝试暴力破解 </li></ul><p>做完尝试之后发现此处并没有注入，但后台能够进行暴力破解，验证码不会失效。然后拿出一堆几十年前的字典狂爆一波，最后GG。。。。</p><h1 id="0x01-尝试可能的漏洞"><a href="#0x01-尝试可能的漏洞" class="headerlink" title="0x01 尝试可能的漏洞"></a>0x01 尝试可能的漏洞</h1><p>  前面没发现太多有用的东西，还是看看站点本身。按照习惯，去放问了网站新闻等内容，通常类似<code>php?id=</code>的url有可能有注入等漏洞，兴高采烈的去各种尝试，后来发现页面不会有任何改变，这里猜测后台应该使用了intval等函数强制转换过。<br>  注入看来是没戏了，然后又发现了一个msg.php，打开一看，果然是留言板，插入xss恶意代码盲打一波。结果到最后，没有任何收获，无解啊。<br>  到目前为止，我们只有一个暴力破解可以使用，奈何字典不够强大，我们怎么继续下去呢？</p><ul><li>旁注？醒醒吧，就这一个站！</li><li>C段？挺花时间的要不继续看看？</li></ul><h1 id="0x02-再次收集信息"><a href="#0x02-再次收集信息" class="headerlink" title="0x02 再次收集信息"></a>0x02 再次收集信息</h1><p>  这次我祭出了更强大的御剑，不对，是更强大的字典，终于皇天不负有心人，在强大的字典面前，一个叫<code>zip.php</code>进入了我的视线，打开如下图：<br><img src="https://i.loli.net/2017/09/25/59c8622d91ead.png" alt=""><br>  这是一个打包程序，我们能不能把源码打包直接下载下来，这样我们不就有可能获得管理员的账号密码了嘛？然而看到这里需要输入密码，可能我们又会去爆破，但是这里有更有价值的信息，我们访问图中的url，下载这套代码，第一行代码吸引了我：<br><img src="https://i.loli.net/2017/09/25/59c862514a0bf.png" alt=""><br>  尝试失败，说明管理员修改了密码。怎么办呢？我们能不能绕过登陆直接打包呢？<br>  我们可以来审一下代码：<br><img src="https://i.loli.net/2017/09/25/59c8624c93f8e.png" alt=""><br>  可以看到，当<code>$_REQUEST[&quot;myaction&quot;])</code>没有传到后台时，则显示密码框，需要用户登陆，若<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dolist&#39;</code>时，需要验证密码，我们跳过这段，看看后面是否还有<code>else if</code>这类代码，结果发现有如下代码：<br><img src="https://i.loli.net/2017/09/25/59c862656ff56.png" alt=""><br>  也就是说，当<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dozip&#39;</code>时，程序就会执行打包函数，无需登录即可完成打包，只要找到需要打包的参数的代码就OK了。<br><img src="https://i.loli.net/2017/09/25/59c862208e248.png" alt=""><br>  可以发现，value这里的值改为对应目录，就可以执行打包了<br>结果打包下来，只有一个sql文件(然而压缩文件1.1G,解压就一个400多k的sql文件？？)<br>从sql里面发现了管理员账号密码，后续的上传shell也非常简单，这里就不多说了。</p><h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>  信息搜集才是王道，只有搜集到足够多有用的信息，思路也自然会打开。然后就请各位大佬，多多指教咯。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;hr&gt;
+&lt;p&gt;前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&quot;0x00-信息搜集&quot;&gt;&lt;a href=&quot;#0x00-信息搜集&quot; class=&quot;headerlink&quot; title=&quot;0x00 信息搜集&quot;&gt;&lt;/a
+      
+    
+    </summary>
+    
+    
+      <category term="渗透测试" scheme="http://e4st.world/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+      <category term="代码审计" scheme="http://e4st.world/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello Hexo</title>
+    <link href="http://e4st.world/2017/02/08/hello-world/"/>
+    <id>http://e4st.world/2017/02/08/hello-world/</id>
+    <published>2017-02-08T03:27:00.000Z</published>
+    <updated>2017-02-10T09:29:28.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>本博客采用hexo搭建，具体方法参考<a href="http://baixin.io/2015/08/HEXO%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" target="_blank" rel="external">HEXO搭建个人博客</a></p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;本博客采用hexo搭建，具体方法参考&lt;a href=&quot;http://baixin.io/2015/08/HEXO%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/&quot; target=&quot;_blank&quot; rel=&quot;ext
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
