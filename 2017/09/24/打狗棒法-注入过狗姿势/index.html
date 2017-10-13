@@ -35,7 +35,7 @@ and 1=1/and ‘a’=’a’类型u">
 <meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b80bccb38.png">
 <meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b8b46f9ce.png">
 <meta property="og:image" content="https://i.loli.net/2017/09/24/59c7b9014a585.png">
-<meta property="og:updated_time" content="2017-09-26T09:12:55.000Z">
+<meta property="og:updated_time" content="2017-10-13T07:43:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="打狗棒法-注入过狗姿势">
 <meta name="twitter:description" content="前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。目前测试的版本为网站安全狗（apache版）4.0.18089，截止2017/09/25官网最新版
@@ -302,7 +302,7 @@ var _hmt = _hmt || [];
 </blockquote>
 <h1 id="0x01-第一种思路"><a href="#0x01-第一种思路" class="headerlink" title="0x01 第一种思路"></a>0x01 第一种思路</h1><p>  先尝试绕过<code>and 1=1/and &#39;a&#39;=&#39;a&#39;</code>的限制<br>  这里可以使用内联注释进行绕过： <code>and /*!1*/=/*!1*/</code>即可绕过<br>  <img src="https://i.loli.net/2017/09/24/59c7ab77294f0.png" alt=""><br>  接着我们尝试一下利用时间盲注来进行绕过，我们先尝试一下正常的语句：</p>
 <blockquote>
-<p> ‘ and if(substr(user(),1,1)=’r’,sleep(5),1– -<br>  这个语句肯定会被拦截，因为含有user()等敏感函数，那么怎么绕过呢，我们试试user/**/()这样的形式<br> ‘ and if(substr(user/**/(),1,1)=’r’,sleep/**/(5),1– -<br>  <img src="https://i.loli.net/2017/09/24/59c7ad8e14c69.png" alt=""></p>
+<p> ‘ and if(substr(user(),1,1)=’r’,sleep(5),1)– -<br>  这个语句肯定会被拦截，因为含有user()等敏感函数，那么怎么绕过呢，我们试试user/**/()这样的形式<br> ‘ and if(substr(user/**/(),1,1)=’r’,sleep/**/(5),1)– -<br>  <img src="https://i.loli.net/2017/09/24/59c7ad8e14c69.png" alt=""></p>
 </blockquote>
 <p>  这里安全狗没有拦截，网站响应时间是6s（没有sleep也有1s的响应，所以延时5s没有问题，虚拟机卡啊T_T）<br>  后续尝试发现，user%0a()也是可以绕过的。</p>
 <blockquote>
@@ -327,7 +327,7 @@ var _hmt = _hmt || [];
         <p><span>本文标题:</span><a href="/2017/09/24/打狗棒法-注入过狗姿势/">打狗棒法-注入过狗姿势</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">c0deeast</a></p>
         <p><span>发布时间:</span>2017-09-24, 20:25:04</p>
-        <p><span>最后更新:</span>2017-09-26, 17:12:55</p>
+        <p><span>最后更新:</span>2017-10-13, 15:43:39</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2017/09/24/打狗棒法-注入过狗姿势/" title="打狗棒法-注入过狗姿势">http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/</a>
             <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/09/24/打狗棒法-注入过狗姿势/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -344,8 +344,8 @@ var _hmt = _hmt || [];
         
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/">
-                    Samba远程命令执行漏洞(CVE-2017-7494)攻击演示
+                <a href="/2017/09/24/两款WAF的注入绕过姿势/">
+                    两款防火墙的注入绕过姿势
                 </a>
             </div>
         
@@ -419,13 +419,13 @@ var _hmt = _hmt || [];
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/" title="下一篇: Samba远程命令执行漏洞(CVE-2017-7494)攻击演示">
+            <a href="/2017/09/24/两款WAF的注入绕过姿势/" title="下一篇: 两款防火墙的注入绕过姿势">
                 <i class="fa fa-angle-right"></i>
             </a>
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/09/24/打狗棒法-注入过狗姿势/">打狗棒法-注入过狗姿势</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/">Samba远程命令执行漏洞(CVE-2017-7494)攻击演示</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/记一次奇葩的渗透测试/">记一次奇葩的渗透测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/08/hello-world/">Hello Hexo</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/09/24/打狗棒法-注入过狗姿势/">打狗棒法-注入过狗姿势</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/24/两款WAF的注入绕过姿势/">两款防火墙的注入绕过姿势</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/02/Samba远程命令执行漏洞(CVE-2017-7494)攻击演示/">Samba远程命令执行漏洞(CVE-2017-7494)攻击演示</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/记一次奇葩的渗透测试/">记一次奇葩的渗透测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/08/hello-world/">Hello Hexo</a></li></ul>
 
 
 
